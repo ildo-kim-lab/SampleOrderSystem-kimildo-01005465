@@ -1,4 +1,7 @@
+from pathlib import Path
 from typing import Callable
+
+from sample_order_system.persistence import save_orders, save_samples
 
 from sample_order_system.console.controller import (
     list_samples,
@@ -129,11 +132,17 @@ def run_app(
     state: AppState,
     input_func: Callable[[str], str],
     output_func: Callable[[str], None],
+    sample_filepath: Path | None = None,
+    order_filepath: Path | None = None,
 ) -> None:
     while True:
         output_func(format_main_menu())
         choice = input_func("선택: ")
         if choice == "0":
+            if sample_filepath is not None:
+                save_samples(state.sample_registry, sample_filepath)
+            if order_filepath is not None:
+                save_orders(state.order_registry, order_filepath)
             output_func("프로그램을 종료합니다")
             return
         if choice == "9":
