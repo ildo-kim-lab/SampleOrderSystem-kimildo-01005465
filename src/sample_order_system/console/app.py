@@ -1,6 +1,10 @@
 from typing import Callable
 
-from sample_order_system.console.controller import list_samples, register_sample
+from sample_order_system.console.controller import (
+    list_samples,
+    register_sample,
+    search_samples,
+)
 from sample_order_system.console.state import AppState
 from sample_order_system.console.view import format_main_menu
 
@@ -43,6 +47,9 @@ def run_sample_menu(
             register_sample(state.sample_registry, input_func, output_func)
         elif action == "조회":
             list_samples(state.sample_registry, output_func)
+        elif action == "검색":
+            keyword = input_func("검색어: ")
+            search_samples(state.sample_registry, keyword, output_func)
 
 
 def run_app(
