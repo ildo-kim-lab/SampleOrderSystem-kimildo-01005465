@@ -10,7 +10,7 @@ class OrderStatus(Enum):
     RELEASED = "RELEASED"
 
 
-_TERMINAL_STATUSES = (OrderStatus.REJECTED, OrderStatus.RELEASED)
+TERMINAL_STATUSES = (OrderStatus.REJECTED, OrderStatus.RELEASED)
 
 
 @dataclass
