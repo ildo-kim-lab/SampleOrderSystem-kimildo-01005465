@@ -1,5 +1,6 @@
 from typing import Callable
 
+from sample_order_system.console.view import format_sample_line
 from sample_order_system.domain.sample import Sample, SampleRegistry
 
 
@@ -36,7 +37,7 @@ def list_samples(
     output_func: Callable[[str], None],
 ) -> None:
     for sample in registry.get_all():
-        output_func(f"{sample.sample_id} | {sample.name} | 재고: {sample.stock}")
+        output_func(format_sample_line(sample))
 
 
 def search_samples(
@@ -46,4 +47,4 @@ def search_samples(
 ) -> None:
     for sample in registry.get_all():
         if keyword in sample.name:
-            output_func(f"{sample.sample_id} | {sample.name} | 재고: {sample.stock}")
+            output_func(format_sample_line(sample))

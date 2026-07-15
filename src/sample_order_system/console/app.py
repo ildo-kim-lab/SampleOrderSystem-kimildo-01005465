@@ -34,7 +34,7 @@ from sample_order_system.console.dummy_data import (
 )
 from sample_order_system.console.release_controller import release_order_console
 from sample_order_system.console.state import AppState
-from sample_order_system.console.view import format_main_menu
+from sample_order_system.console.view import format_main_menu, format_order_line
 from sample_order_system.domain.order import OrderStatus
 
 _MAIN_MENU_CHOICES = {
@@ -88,9 +88,7 @@ def _select_order_by_status(
         output_func("대상 주문이 없습니다")
         return None
     for index, order in enumerate(matching_orders, start=1):
-        output_func(
-            f"{index}. {order.sample_id} | {order.customer_name} | 수량: {order.quantity}"
-        )
+        output_func(f"{index}. {format_order_line(order)}")
     index_choice = int(input_func(prompt))
     if not 1 <= index_choice <= len(matching_orders):
         output_func("잘못된 번호입니다")

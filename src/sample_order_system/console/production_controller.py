@@ -1,5 +1,6 @@
 from typing import Callable
 
+from sample_order_system.console.view import format_order_line
 from sample_order_system.domain.order import Order
 from sample_order_system.domain.order_service import complete_order_production
 from sample_order_system.domain.production_line_status import ProductionLine
@@ -21,7 +22,7 @@ def list_waiting_orders(
     output_func: Callable[[str], None],
 ) -> None:
     for order in queue.list_all():
-        output_func(f"{order.sample_id} | {order.customer_name} | 수량: {order.quantity}")
+        output_func(format_order_line(order))
 
 
 def show_production_status(

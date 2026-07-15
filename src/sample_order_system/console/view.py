@@ -1,3 +1,15 @@
+from sample_order_system.domain.order import Order
+from sample_order_system.domain.sample import Sample
+
+
+def format_sample_line(sample: Sample) -> str:
+    return f"{sample.sample_id} | {sample.name} | 재고: {sample.stock}"
+
+
+def format_order_line(order: Order) -> str:
+    return f"{order.sample_id} | {order.customer_name} | 수량: {order.quantity}"
+
+
 def format_main_menu() -> str:
     return (
         "===== SampleOrderSystem =====\n"
