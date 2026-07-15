@@ -161,6 +161,21 @@ def test_run_app_routes_production_line_menu_choice():
     assert "S-001 | ACME Corp | 수량: 3" in combined_output
 
 
+def test_run_app_routes_dummy_data_menu_choice():
+    state = AppState()
+    inputs = iter(["9", "0"])
+    outputs = []
+
+    run_app(
+        state,
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    assert len(state.sample_registry.get_all()) >= 3
+    assert len(state.order_registry.get_all()) == 5
+
+
 @pytest.mark.parametrize(
     "choice,expected",
     [
