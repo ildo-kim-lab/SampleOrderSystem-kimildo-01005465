@@ -27,12 +27,13 @@ def create_order(
     if selected_sample is None:
         return
 
-    customer_name = input_func("고객명: ")
     try:
         quantity = int(input_func("주문 수량: "))
     except ValueError:
         output_func("숫자 형식이 올바르지 않습니다")
         return
+
+    customer_name = input_func("고객명: ")
 
     order = Order(
         sample_id=selected_sample.sample_id,

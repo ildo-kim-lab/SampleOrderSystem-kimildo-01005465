@@ -42,10 +42,10 @@ def test_console_smoke_saves_persistence_files_on_exit(tmp_path):
 
 
 def test_console_smoke_full_order_flow_reflected_in_saved_state(tmp_path):
-    # 9=더미 데이터, 2=주문메뉴, 1=접수(시료 1번=S-001 선택/Customer1/5),
+    # 9=더미 데이터, 2=주문메뉴, 1=접수(시료 1번=S-001 선택/5/Customer1),
     # 2=승인(방금 만든 주문은 RESERVED 목록의 2번째), 0=주문메뉴에서 뒤로가기,
     # 4=출고 처리(방금 승인한 주문은 CONFIRMED 목록의 2번째), 0=종료
-    inputs = "9\n2\n1\n1\nCustomer1\n5\n2\n2\n0\n4\n2\n0\n"
+    inputs = "9\n2\n1\n1\n5\nCustomer1\n2\n2\n0\n4\n2\n0\n"
 
     result = run_console(inputs, cwd=tmp_path)
 

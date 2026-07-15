@@ -91,7 +91,7 @@ def test_run_app_routes_order_menu_choice_to_creation():
             yield_rate=0.9,
         )
     )
-    inputs = iter(["2", "1", "1", "ACME Corp", "10", "0", "0"])
+    inputs = iter(["2", "1", "1", "10", "ACME Corp", "0", "0"])
     outputs = []
 
     run_app(

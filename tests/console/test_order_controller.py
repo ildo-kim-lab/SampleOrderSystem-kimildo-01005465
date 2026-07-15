@@ -27,7 +27,7 @@ def _sample_registry_with_one_sample() -> SampleRegistry:
 def test_create_order_adds_reserved_order_for_selected_sample():
     order_registry = OrderRegistry()
     sample_registry = _sample_registry_with_one_sample()
-    inputs = iter(["1", "ACME Corp", "10"])
+    inputs = iter(["1", "10", "ACME Corp"])
     outputs = []
 
     create_order(
@@ -48,7 +48,7 @@ def test_create_order_adds_reserved_order_for_selected_sample():
 def test_create_order_lists_samples_with_index_before_prompting():
     order_registry = OrderRegistry()
     sample_registry = _sample_registry_with_one_sample()
-    inputs = iter(["1", "ACME Corp", "10"])
+    inputs = iter(["1", "10", "ACME Corp"])
     outputs = []
 
     create_order(

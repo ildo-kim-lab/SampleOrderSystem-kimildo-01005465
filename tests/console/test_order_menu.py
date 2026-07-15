@@ -48,7 +48,7 @@ def test_run_order_menu_creates_order_then_returns_to_menu():
             yield_rate=0.9,
         )
     )
-    inputs = iter(["1", "1", "ACME Corp", "10", "0"])
+    inputs = iter(["1", "1", "10", "ACME Corp", "0"])
     outputs = []
 
     run_order_menu(
