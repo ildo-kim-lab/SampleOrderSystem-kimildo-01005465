@@ -81,6 +81,22 @@ def test_run_app_routes_sample_menu_choice_to_registration():
     assert sample.name == "Wafer-A"
 
 
+def test_run_app_routes_order_menu_choice_to_creation():
+    state = AppState()
+    inputs = iter(["2", "1", "S-001", "ACME Corp", "10", "0", "0"])
+    outputs = []
+
+    run_app(
+        state,
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    orders = state.order_registry.get_all()
+    assert len(orders) == 1
+    assert orders[0].sample_id == "S-001"
+
+
 @pytest.mark.parametrize(
     "choice,expected",
     [
