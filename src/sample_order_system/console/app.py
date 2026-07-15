@@ -5,6 +5,7 @@ from sample_order_system.console.controller import (
     register_sample,
     search_samples,
 )
+from sample_order_system.console.order_controller import create_order
 from sample_order_system.console.state import AppState
 from sample_order_system.console.view import format_main_menu
 
@@ -62,6 +63,20 @@ def run_sample_menu(
         elif action == "검색":
             keyword = input_func("검색어: ")
             search_samples(state.sample_registry, keyword, output_func)
+
+
+def run_order_menu(
+    state: AppState,
+    input_func: Callable[[str], str],
+    output_func: Callable[[str], None],
+) -> None:
+    while True:
+        choice = input_func("선택: ")
+        action = resolve_order_menu_choice(choice)
+        if action == "뒤로가기":
+            return
+        if action == "접수":
+            create_order(state.order_registry, input_func, output_func)
 
 
 def run_app(
