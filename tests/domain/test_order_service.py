@@ -80,3 +80,11 @@ def test_release_order_raises_when_sample_not_found():
 
     with pytest.raises(ValueError, match="S-404"):
         release_order(order, registry)
+
+
+def test_complete_order_production_raises_when_sample_not_found():
+    registry = SampleRegistry()
+    order = Order(sample_id="S-404", customer_name="ACME Corp", quantity=10)
+
+    with pytest.raises(ValueError, match="S-404"):
+        complete_order_production(order, registry)
