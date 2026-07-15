@@ -8,6 +8,7 @@ from sample_order_system.console.controller import (
 from sample_order_system.console.order_controller import (
     approve_order_console,
     create_order,
+    reject_order_console,
 )
 from sample_order_system.console.state import AppState
 from sample_order_system.console.view import format_main_menu
@@ -94,6 +95,19 @@ def run_order_menu(
             index_choice = int(input_func("승인할 번호: "))
             selected_order = reserved_orders[index_choice - 1]
             approve_order_console(selected_order, state.sample_registry, output_func)
+        elif action == "거절":
+            reserved_orders = [
+                order
+                for order in state.order_registry.get_all()
+                if order.status == OrderStatus.RESERVED
+            ]
+            for index, order in enumerate(reserved_orders, start=1):
+                output_func(
+                    f"{index}. {order.sample_id} | {order.customer_name} | 수량: {order.quantity}"
+                )
+            index_choice = int(input_func("거절할 번호: "))
+            selected_order = reserved_orders[index_choice - 1]
+            reject_order_console(selected_order, output_func)
 
 
 def run_app(
