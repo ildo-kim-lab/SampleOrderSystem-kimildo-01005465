@@ -4,7 +4,17 @@ from pathlib import Path
 
 from sample_order_system.domain.order import Order, OrderStatus
 from sample_order_system.domain.order_registry import OrderRegistry
+from sample_order_system.domain.production_queue import ProductionQueue
 from sample_order_system.domain.sample import Sample, SampleRegistry
+
+
+def _order_to_dict(order: Order) -> dict:
+    return {
+        "sample_id": order.sample_id,
+        "customer_name": order.customer_name,
+        "quantity": order.quantity,
+        "status": order.status.value,
+    }
 
 
 def save_samples(sample_registry: SampleRegistry, filepath: Path) -> None:
@@ -21,15 +31,7 @@ def load_samples(filepath: Path) -> SampleRegistry:
 
 
 def save_orders(order_registry: OrderRegistry, filepath: Path) -> None:
-    data = [
-        {
-            "sample_id": order.sample_id,
-            "customer_name": order.customer_name,
-            "quantity": order.quantity,
-            "status": order.status.value,
-        }
-        for order in order_registry.get_all()
-    ]
+    data = [_order_to_dict(order) for order in order_registry.get_all()]
     filepath.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
 
 
@@ -45,3 +47,8 @@ def load_orders(filepath: Path) -> OrderRegistry:
         order.status = OrderStatus(entry["status"])
         registry.register(order)
     return registry
+
+
+def save_production_queue(queue: ProductionQueue, filepath: Path) -> None:
+    data = [_order_to_dict(order) for order in queue.list_all()]
+    filepath.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
