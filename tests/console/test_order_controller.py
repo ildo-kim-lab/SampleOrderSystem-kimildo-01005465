@@ -1,6 +1,7 @@
 from sample_order_system.console.order_controller import (
     approve_order_console,
     create_order,
+    reject_order_console,
 )
 from sample_order_system.domain.order import Order, OrderStatus
 from sample_order_system.domain.order_registry import OrderRegistry
@@ -44,3 +45,13 @@ def test_approve_order_console_confirms_when_stock_is_sufficient():
 
     assert order.status == OrderStatus.CONFIRMED
     assert any("CONFIRMED" in message for message in outputs)
+
+
+def test_reject_order_console_rejects_and_reports_result():
+    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    outputs = []
+
+    reject_order_console(order, output_func=outputs.append)
+
+    assert order.status == OrderStatus.REJECTED
+    assert any("REJECTED" in message for message in outputs)
