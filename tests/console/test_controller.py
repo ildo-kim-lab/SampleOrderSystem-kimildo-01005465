@@ -106,3 +106,30 @@ def test_search_samples_outputs_only_matching_name():
     combined_output = "\n".join(outputs)
     assert "Wafer-A" in combined_output
     assert "Chip-B" not in combined_output
+
+
+def test_search_samples_also_matches_by_sample_id():
+    registry = SampleRegistry()
+    registry.register(
+        Sample(
+            sample_id="S-001",
+            name="Wafer-A",
+            avg_production_time=2.5,
+            yield_rate=0.9,
+        )
+    )
+    registry.register(
+        Sample(
+            sample_id="S-002",
+            name="Chip-B",
+            avg_production_time=1.0,
+            yield_rate=0.8,
+        )
+    )
+    outputs = []
+
+    search_samples(registry, keyword="001", output_func=outputs.append)
+
+    combined_output = "\n".join(outputs)
+    assert "Wafer-A" in combined_output
+    assert "Chip-B" not in combined_output
