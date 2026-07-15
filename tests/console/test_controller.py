@@ -24,6 +24,28 @@ def test_register_sample_adds_sample_with_entered_values():
     assert sample.yield_rate == 0.9
 
 
+def test_register_sample_reports_friendly_message_on_duplicate_id():
+    registry = SampleRegistry()
+    registry.register(
+        Sample(
+            sample_id="S-001",
+            name="Wafer-A",
+            avg_production_time=2.5,
+            yield_rate=0.9,
+        )
+    )
+    inputs = iter(["S-001", "Wafer-A-Duplicate", "1.0", "0.8"])
+    outputs = []
+
+    register_sample(
+        registry,
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    assert any("이미 등록된" in message for message in outputs)
+
+
 def test_list_samples_outputs_name_and_stock_for_each_sample():
     registry = SampleRegistry()
     registry.register(
