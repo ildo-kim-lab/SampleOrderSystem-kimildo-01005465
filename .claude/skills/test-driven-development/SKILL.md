@@ -59,12 +59,12 @@ NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 ```dot
 digraph agentic_tdd_cycle {
     rankdir=LR;
-    plan [label="PLAN.md 작성\n(이번 증분의 목표)", shape=box, style=filled, fillcolor="#ffe6cc"];
+    plan [label="CURRENT_PLAN.md 작성\n(이번 증분의 목표)", shape=box, style=filled, fillcolor="#ffe6cc"];
     red [label="RED\n실패하는 테스트 작성", shape=box, style=filled, fillcolor="#ffcccc"];
     verify_red [label="제대로\n실패하는지 확인", shape=diamond];
-    review_plan [label="사람 검수\n(PLAN.md + 실패 테스트)", shape=box, style=filled, fillcolor="#fff2cc"];
+    review_plan [label="사람 검수\n(CURRENT_PLAN.md + 실패 테스트)", shape=box, style=filled, fillcolor="#fff2cc"];
     commit_red [label="커밋 여부\n문의", shape=diamond];
-    green [label="GREEN\nPLAN.md 목표를 달성하는\n최소한의 코드", shape=box, style=filled, fillcolor="#ccffcc"];
+    green [label="GREEN\nCURRENT_PLAN.md 목표를 달성하는\n최소한의 코드", shape=box, style=filled, fillcolor="#ccffcc"];
     verify_green [label="테스트 통과\n확인 (전체 그린)", shape=diamond];
     review [label="REVIEW\n(사람이 수행)\n- GREEN의 코드 수정 필요?\n- PLAN 외 구현 있었나?\n- 리팩터링 필요?", shape=box, style=filled, fillcolor="#ccccff"];
     commit_review [label="커밋 여부\n문의", shape=diamond];
@@ -87,14 +87,15 @@ digraph agentic_tdd_cycle {
 }
 ```
 
-### 1단계 — PLAN.md 작성 (RED 착수 전)
+### 1단계 — CURRENT_PLAN.md 작성 (RED 착수 전)
 
 이번 증분(하나의 실패하는 테스트가 검증할 동작)에 대해 무엇을, 왜 구현하는지
-`PLAN.md`에 짧게 기록한다. 이 문서는 사람이 구현 전에 방향을 검수할 수 있게 하기
-위한 것이며, 프로젝트 전체 로드맵 문서(예: `docs/PLAN.md`)와는 다른, **이번
-증분 전용 계획**이다.
+`CURRENT_PLAN.md`에 짧게 기록한다. 이 파일은 이 스킬과 같은 디렉터리
+(`.claude/skills/test-driven-development/CURRENT_PLAN.md`)에 두며, 매 증분마다
+내용이 통째로 교체된다. 프로젝트 전체 로드맵 문서(예: `docs/PLAN.md`)와는
+이름은 비슷하지만 다른 파일이며, **이번 증분 전용 계획**이다.
 
-`PLAN.md`에 포함할 내용:
+`CURRENT_PLAN.md`에 포함할 내용:
 - 이번 증분에서 달성할 목표(goal) — 한두 문장
 - 검증할 동작(behavior) 한 가지
 - 관련 요구사항 근거 (예: `docs/PRD.md`의 섹션 번호)
@@ -158,21 +159,21 @@ pytest path/to/test_file.py
 
 ### 3단계 — 사람 검수 (RED 체크포인트)
 
-`PLAN.md`와 제대로 실패하는 테스트를 사람 파트너에게 보여주고 검수를 받는다.
+`CURRENT_PLAN.md`와 제대로 실패하는 테스트를 사람 파트너에게 보여주고 검수를 받는다.
 
 - **승인**: 다음 단계(커밋 여부 문의)로 진행
-- **반려/수정 요청**: `PLAN.md`와 테스트를 수정하고 RED부터 다시 검증
+- **반려/수정 요청**: `CURRENT_PLAN.md`와 테스트를 수정하고 RED부터 다시 검증
 
 검수를 건너뛰고 GREEN으로 넘어가지 말라. 이 체크포인트가 일반 TDD와의 핵심 차이다.
 
 ### 4단계 — 커밋 여부 문의 (RED 완료 후)
 
-사람 파트너에게 지금까지(=`PLAN.md` + 실패하는 테스트)를 커밋할지 물어본다.
+사람 파트너에게 지금까지(=`CURRENT_PLAN.md` + 실패하는 테스트)를 커밋할지 물어본다.
 **사람이 명시적으로 답하기 전에는 커밋하지 않는다.**
 
-### 5단계 — GREEN: 최소한의 코드로 PLAN.md 목표 달성
+### 5단계 — GREEN: 최소한의 코드로 CURRENT_PLAN.md 목표 달성
 
-`PLAN.md`에 적은 목표를 달성하도록, 테스트를 통과시키는 가장 단순한 코드를 작성하라.
+`CURRENT_PLAN.md`에 적은 목표를 달성하도록, 테스트를 통과시키는 가장 단순한 코드를 작성하라.
 
 <Good>
 ```python
@@ -203,7 +204,7 @@ def retry_operation(
 </Bad>
 
 기능을 추가하지 말고, 다른 코드를 리팩터링하지 말고, 테스트가 요구하는 것 이상으로
-"개선"하지 말라. **PLAN.md에 없는 구현을 슬쩍 끼워 넣지 말라** — REVIEW 단계에서
+"개선"하지 말라. **CURRENT_PLAN.md에 없는 구현을 슬쩍 끼워 넣지 말라** — REVIEW 단계에서
 반드시 드러난다.
 
 ### GREEN 검증 — 통과하는 것을 직접 보기
@@ -228,7 +229,7 @@ pytest path/to/test_file.py
 GREEN이 끝나고 전체 테스트가 그린이 되면, **사람 파트너가 직접** 다음을 확인한다:
 
 - GREEN 단계에서 작성된 코드에 수정이 필요한가?
-- `PLAN.md`에 없던 구현이 포함되지는 않았는가? (스코프 크리프)
+- `CURRENT_PLAN.md`에 없던 구현이 포함되지는 않았는가? (스코프 크리프)
 - 리팩터링이 필요한가? (중복 제거, 이름 개선, 헬퍼 추출 등)
 
 에이전트는 REVIEW 결과에 따라 코드를 수정하고, 테스트가 여전히 그린인지 다시
@@ -242,7 +243,7 @@ REVIEW가 끝나면 사람 파트너에게 커밋할지 다시 물어본다. **�
 
 ### 반복
 
-다음 증분에 대해 PLAN.md 작성부터 다시 시작한다.
+다음 증분에 대해 CURRENT_PLAN.md 작성부터 다시 시작한다.
 
 ## 좋은 테스트
 
@@ -342,7 +343,7 @@ TDD가 바로 실용적이다:
 - "이미 X시간 썼는데, 지우는 건 낭비"
 - "TDD는 교조적, 나는 실용적"
 - "이건 다른 경우인데..."
-- PLAN.md 없이 RED를 시작했다
+- CURRENT_PLAN.md 없이 RED를 시작했다
 - 사람 검수 없이 GREEN으로 넘어갔다
 - 사람에게 묻지 않고 커밋했다
 
@@ -352,7 +353,7 @@ TDD가 바로 실용적이다:
 
 **버그:** 빈 이메일이 허용됨
 
-**PLAN.md**
+**CURRENT_PLAN.md**
 ```markdown
 ## 목표
 빈 이메일(또는 공백만 있는 이메일)이 폼 제출 시 거절되도록 한다.
@@ -401,7 +402,7 @@ PASSED
 
 작업을 완료(complete)로 표시하기 전에:
 
-- [ ] 이번 증분에 대한 `PLAN.md`가 작성되고 사람 검수를 받았다
+- [ ] 이번 증분에 대한 `CURRENT_PLAN.md`가 작성되고 사람 검수를 받았다
 - [ ] 모든 새 함수/메서드에 테스트가 있다
 - [ ] 각 테스트가 실패하는 것을 직접 보고 구현했다
 - [ ] 각 테스트가 예상한 이유로 실패했다 (오타가 아니라 기능 부재로)
@@ -424,11 +425,11 @@ PASSED
 | 테스트가 너무 복잡하다 | 설계가 너무 복잡하다. 인터페이스를 단순화하라. |
 | 모든 것을 mock해야 한다 | 코드가 너무 결합(coupled)되어 있다. 의존성 주입(DI)을 사용하라. |
 | 테스트 셋업이 거대하다 | 헬퍼를 추출하라. 그래도 복잡하면 설계를 단순화하라. |
-| PLAN.md 검수가 반려됐다 | PLAN.md와 테스트를 수정하고 RED부터 다시 검증한다. GREEN으로 넘어가지 않는다. |
+| CURRENT_PLAN.md 검수가 반려됐다 | CURRENT_PLAN.md와 테스트를 수정하고 RED부터 다시 검증한다. GREEN으로 넘어가지 않는다. |
 
 ## 디버깅 통합
 
-버그를 발견했는가? 그 버그를 재현하는 실패하는 테스트를 먼저 작성하라. PLAN.md에
+버그를 발견했는가? 그 버그를 재현하는 실패하는 테스트를 먼저 작성하라. CURRENT_PLAN.md에
 버그 재현 시나리오를 적고, Agentic TDD 사이클을 따르라. 그 테스트가 수정을
 증명하고 회귀를 방지한다.
 
@@ -503,7 +504,7 @@ pytest -s
 ## 최종 규칙
 
 ```
-프로덕션 코드 → PLAN.md가 검수되었고, 테스트가 존재하고, 먼저 실패했다
+프로덕션 코드 → CURRENT_PLAN.md가 검수되었고, 테스트가 존재하고, 먼저 실패했다
 GREEN 완료 → 사람이 REVIEW를 수행했다
 커밋 → 매 체크포인트(RED 후, REVIEW 후)마다 사람에게 물었다
 그 외 → Agentic TDD가 아니다

@@ -1,4 +1,4 @@
-# PLAN.md (이번 증분)
+# CURRENT_PLAN.md (이번 증분)
 
 ## 목표
 `Order.complete_production()`은 PRODUCING 상태의 주문에서만 호출할 수
