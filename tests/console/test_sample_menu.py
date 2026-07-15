@@ -57,3 +57,35 @@ def test_run_sample_menu_lists_samples_then_returns_to_menu():
     )
 
     assert any("Wafer-A" in message for message in outputs)
+
+
+def test_run_sample_menu_searches_samples_by_keyword_then_returns_to_menu():
+    state = AppState()
+    state.sample_registry.register(
+        Sample(
+            sample_id="S-001",
+            name="Wafer-A",
+            avg_production_time=2.5,
+            yield_rate=0.9,
+        )
+    )
+    state.sample_registry.register(
+        Sample(
+            sample_id="S-002",
+            name="Chip-B",
+            avg_production_time=1.0,
+            yield_rate=0.8,
+        )
+    )
+    inputs = iter(["3", "Wafer", "0"])
+    outputs = []
+
+    run_sample_menu(
+        state,
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    combined_output = "\n".join(outputs)
+    assert "Wafer-A" in combined_output
+    assert "Chip-B" not in combined_output
