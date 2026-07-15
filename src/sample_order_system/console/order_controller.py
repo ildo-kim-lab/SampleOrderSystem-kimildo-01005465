@@ -31,3 +31,11 @@ def approve_order_console(
 ) -> None:
     approve_order(order, sample_registry)
     output_func(f"주문 승인 처리됨 -> {order.status.value}")
+
+
+def reject_order_console(
+    order: Order,
+    output_func: Callable[[str], None],
+) -> None:
+    order.reject()
+    output_func(f"주문 거절 처리됨 -> {order.status.value}")
