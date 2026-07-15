@@ -155,7 +155,7 @@ def test_run_app_routes_production_line_menu_choice():
     state = AppState()
     order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=3)
     state.production_queue.enqueue(order)
-    inputs = iter(["5", "0"])
+    inputs = iter(["5", "1", "2", "0", "0"])
     outputs = []
 
     run_app(
@@ -167,6 +167,32 @@ def test_run_app_routes_production_line_menu_choice():
     combined_output = "\n".join(outputs)
     assert "생산 중인 주문 없음" in combined_output
     assert "S-001 | ACME Corp | 수량: 3" in combined_output
+
+
+def test_run_app_routes_production_line_completion_choice():
+    state = AppState()
+    state.sample_registry.register(
+        Sample(
+            sample_id="S-001",
+            name="Wafer-A",
+            avg_production_time=2.5,
+            yield_rate=0.9,
+            stock=3,
+        )
+    )
+    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    order.status = OrderStatus.PRODUCING
+    state.production_queue.enqueue(order)
+    inputs = iter(["5", "3", "0", "0"])
+    outputs = []
+
+    run_app(
+        state,
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    assert order.status == OrderStatus.CONFIRMED
 
 
 def test_run_app_routes_dummy_data_menu_choice():
