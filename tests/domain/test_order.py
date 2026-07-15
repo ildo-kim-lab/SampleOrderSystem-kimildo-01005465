@@ -114,3 +114,11 @@ def test_complete_production_raises_when_order_already_rejected():
 
     with pytest.raises(ValueError):
         order.complete_production()
+
+
+def test_approve_raises_when_order_already_producing():
+    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    order.approve(available_stock=0)
+
+    with pytest.raises(ValueError):
+        order.approve(available_stock=10)
