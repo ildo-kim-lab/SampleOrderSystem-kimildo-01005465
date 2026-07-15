@@ -1,6 +1,4 @@
-# PRD — 반도체 시료 생산주문관리 시스템 (SampleOrderSystem)
-
-> 원본 요구사항: [docs/S-semi.txt](docs/S-semi.txt)
+# 반도체 시료 생산주문관리 시스템 (SampleOrderSystem)
 
 ## 1. 배경 및 목적
 
@@ -112,3 +110,5 @@ CONFIRMED --(출고 처리)--> RELEASED
 - 재고 부족 시 생산 라인에 정확한 실 생산량/생산 시간이 계산되어 등록된다.
 - 모니터링 메뉴에서 `REJECTED` 주문이 집계에서 제외됨을 확인할 수 있다.
 - 생산 큐가 FIFO 순서로 처리됨을 확인할 수 있다.
+
+> 원본 요구사항: [docs/S-semi.txt](docs/S-semi.txt)
