@@ -31,3 +31,17 @@ def test_run_app_exits_on_zero_choice():
     )
 
     assert any("종료" in message for message in outputs)
+
+
+def test_run_app_reports_invalid_choice_and_continues():
+    inputs = iter(["9", "0"])
+    outputs = []
+
+    run_app(
+        AppState(),
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    assert any("잘못된 선택" in message for message in outputs)
+    assert any("종료" in message for message in outputs)
