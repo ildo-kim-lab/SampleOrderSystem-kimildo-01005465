@@ -21,3 +21,11 @@ def register_sample(
     )
     registry.register(sample)
     output_func(f"{name} 등록 완료")
+
+
+def list_samples(
+    registry: SampleRegistry,
+    output_func: Callable[[str], None],
+) -> None:
+    for sample in registry.get_all():
+        output_func(f"{sample.sample_id} | {sample.name} | 재고: {sample.stock}")
