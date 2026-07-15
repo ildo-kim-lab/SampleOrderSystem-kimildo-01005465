@@ -25,3 +25,17 @@ def test_sample_reports_its_stock_quantity():
     )
 
     assert sample.stock == 50
+
+
+def test_decrease_stock_reduces_stock_by_given_quantity():
+    sample = Sample(
+        sample_id="S-001",
+        name="Wafer-A",
+        avg_production_time=2.5,
+        yield_rate=0.9,
+        stock=50,
+    )
+
+    sample.decrease_stock(10)
+
+    assert sample.stock == 40
