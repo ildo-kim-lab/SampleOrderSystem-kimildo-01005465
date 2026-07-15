@@ -25,6 +25,7 @@ from sample_order_system.console.order_controller import (
     reject_order_console,
 )
 from sample_order_system.console.production_controller import (
+    complete_next_production_console,
     list_waiting_orders,
     show_production_status,
 )
@@ -38,6 +39,7 @@ from sample_order_system.console.view import (
     format_main_menu,
     format_order_line,
     format_order_menu,
+    format_production_menu,
     format_sample_menu,
 )
 from sample_order_system.domain.order import Order, OrderStatus
@@ -77,6 +79,18 @@ _ORDER_MENU_CHOICES = {
 
 def resolve_order_menu_choice(choice: str) -> str | None:
     return _ORDER_MENU_CHOICES.get(choice)
+
+
+_PRODUCTION_MENU_CHOICES = {
+    "0": "뒤로가기",
+    "1": "생산 현황",
+    "2": "대기 주문 확인",
+    "3": "생산 완료 처리",
+}
+
+
+def resolve_production_menu_choice(choice: str) -> str | None:
+    return _PRODUCTION_MENU_CHOICES.get(choice)
 
 
 def _select_order_by_status(
@@ -181,6 +195,30 @@ def run_order_menu(
     )
 
 
+def run_production_menu(
+    state: AppState,
+    input_func: Callable[[str], str],
+    output_func: Callable[[str], None],
+) -> None:
+    _run_menu_loop(
+        input_func,
+        output_func,
+        format_production_menu(),
+        _PRODUCTION_MENU_CHOICES,
+        {
+            "생산 현황": lambda: show_production_status(
+                state.production_line, output_func
+            ),
+            "대기 주문 확인": lambda: list_waiting_orders(
+                state.production_queue, output_func
+            ),
+            "생산 완료 처리": lambda: complete_next_production_console(
+                state.production_queue, state.sample_registry, output_func
+            ),
+        },
+    )
+
+
 def run_app(
     state: AppState,
     input_func: Callable[[str], str],
@@ -200,16 +238,12 @@ def run_app(
         if selected_order is not None:
             release_order_console(selected_order, state.sample_registry, output_func)
 
-    def do_production_line() -> None:
-        show_production_status(state.production_line, output_func)
-        list_waiting_orders(state.production_queue, output_func)
-
     handlers: dict[str, Callable[[], None]] = {
         "시료관리": lambda: run_sample_menu(state, input_func, output_func),
         "주문": lambda: run_order_menu(state, input_func, output_func),
         "모니터링": do_monitoring,
         "출고 처리": do_release,
-        "생산 라인": do_production_line,
+        "생산 라인": lambda: run_production_menu(state, input_func, output_func),
     }
 
     while True:

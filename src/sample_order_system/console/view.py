@@ -41,3 +41,13 @@ def format_order_menu() -> str:
         "3. 거절\n"
         "0. 뒤로가기\n"
     )
+
+
+def format_production_menu() -> str:
+    return (
+        "----- 생산 라인 -----\n"
+        "1. 생산 현황\n"
+        "2. 대기 주문 확인\n"
+        "3. 생산 완료 처리\n"
+        "0. 뒤로가기\n"
+    )

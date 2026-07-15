@@ -117,7 +117,7 @@ def test_start_app_loads_production_queue(tmp_path):
         order_filepath=order_filepath,
         queue_filepath=queue_filepath,
     )
-    inputs = iter(["5", "0"])
+    inputs = iter(["5", "2", "0", "0"])
     outputs = []
 
     start_app(
