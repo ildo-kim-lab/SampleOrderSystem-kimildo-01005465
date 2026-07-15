@@ -5,3 +5,9 @@ from sample_order_system.domain.sample import SampleRegistry
 def approve_order(order: Order, registry: SampleRegistry) -> None:
     sample = registry.find_by_id(order.sample_id)
     order.approve(available_stock=sample.stock)
+
+
+def release_order(order: Order, registry: SampleRegistry) -> None:
+    sample = registry.find_by_id(order.sample_id)
+    order.release()
+    sample.decrease_stock(order.quantity)
