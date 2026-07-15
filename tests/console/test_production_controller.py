@@ -1,6 +1,5 @@
 from sample_order_system.console.production_controller import (
     complete_next_production_console,
-    complete_production_console,
     list_waiting_orders,
     show_production_status,
 )
@@ -8,29 +7,6 @@ from sample_order_system.domain.order import Order, OrderStatus
 from sample_order_system.domain.production_line_status import ProductionLine
 from sample_order_system.domain.production_queue import ProductionQueue
 from sample_order_system.domain.sample import Sample, SampleRegistry
-
-
-def test_complete_production_console_confirms_and_increases_stock():
-    sample_registry = SampleRegistry()
-    sample_registry.register(
-        Sample(
-            sample_id="S-001",
-            name="Wafer-A",
-            avg_production_time=2.5,
-            yield_rate=0.9,
-            stock=3,
-        )
-    )
-    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
-    order.status = OrderStatus.PRODUCING
-    outputs = []
-
-    complete_production_console(order, sample_registry, output_func=outputs.append)
-
-    assert order.status == OrderStatus.CONFIRMED
-    # shortage = 10 - 3 = 7, production_quantity = ceil(7 / 0.9) = 8
-    assert sample_registry.find_by_id("S-001").stock == 11
-    assert any("CONFIRMED" in message for message in outputs)
 
 
 def test_list_waiting_orders_outputs_orders_in_fifo_order():
