@@ -1,17 +1,15 @@
 # PLAN.md (이번 증분)
 
 ## 목표
-콘솔에서 상태별(RESERVED/CONFIRMED/PRODUCING/RELEASED) 주문 수를 확인할 수
-있다. REJECTED는 집계에서 제외한다.
+시료별 재고 수량을 주문 대비 상태(여유/부족/고갈)로 판정할 수 있다.
 
 ## 검증할 동작
-`monitor_order_counts(order_registry, output_func)`를 호출하면 RESERVED,
-CONFIRMED, PRODUCING, RELEASED 각각의 개수가 출력되고, REJECTED 개수는
-출력되지 않는다.
+`determine_stock_status(stock, demand)`는 재고가 0이면 "고갈", 수요보다
+적으면 "부족", 그 외에는 "여유"를 반환한다.
 
 ## 근거
-- `docs/PRD.md` 5.5 모니터링 — 주문량확인: 상태별 목록 확인, REJECTED는
-  유효한 주문이 아니므로 무시
+- `docs/PRD.md` 5.5 모니터링 — 재고량확인: 여유/부족/고갈 상태 표기
 
 ## 범위 외
-- 재고량 확인(여유/부족/고갈 표기), 생산 라인 현황 표기는 다음 증분에서 다룬다.
+- 콘솔 출력 함수(각 시료별로 실제 화면에 표기하는 부분)와의 연결은 다음 증분에서
+  다룬다.
