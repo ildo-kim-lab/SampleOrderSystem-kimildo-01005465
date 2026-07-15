@@ -1,3 +1,5 @@
+import pytest
+
 from sample_order_system.domain.sample import Sample, SampleRegistry
 
 
@@ -66,3 +68,25 @@ def test_find_by_id_returns_registered_sample():
     registry.register(sample)
 
     assert registry.find_by_id("S-001") is sample
+
+
+def test_register_raises_on_duplicate_sample_id():
+    registry = SampleRegistry()
+    registry.register(
+        Sample(
+            sample_id="S-001",
+            name="Wafer-A",
+            avg_production_time=2.5,
+            yield_rate=0.9,
+        )
+    )
+
+    with pytest.raises(ValueError, match="S-001"):
+        registry.register(
+            Sample(
+                sample_id="S-001",
+                name="Wafer-A-Duplicate",
+                avg_production_time=1.0,
+                yield_rate=0.8,
+            )
+        )
