@@ -46,5 +46,5 @@ def search_samples(
     output_func: Callable[[str], None],
 ) -> None:
     for sample in registry.get_all():
-        if keyword in sample.name:
+        if keyword in sample.name or keyword in sample.sample_id:
             output_func(format_sample_line(sample))
