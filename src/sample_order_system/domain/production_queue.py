@@ -12,3 +12,6 @@ class ProductionQueue:
 
     def dequeue(self) -> Order:
         return self._orders.popleft()
+
+    def list_all(self) -> list[Order]:
+        return list(self._orders)
