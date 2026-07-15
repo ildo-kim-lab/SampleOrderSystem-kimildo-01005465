@@ -92,6 +92,9 @@ def _select_order_by_status(
             f"{index}. {order.sample_id} | {order.customer_name} | 수량: {order.quantity}"
         )
     index_choice = int(input_func(prompt))
+    if not 1 <= index_choice <= len(matching_orders):
+        output_func("잘못된 번호입니다")
+        return None
     return matching_orders[index_choice - 1]
 
 
