@@ -21,6 +21,8 @@ class SampleRegistry:
         self._samples: list[Sample] = []
 
     def register(self, sample: Sample) -> None:
+        if self.find_by_id(sample.sample_id) is not None:
+            raise ValueError(f"이미 등록된 시료 ID입니다: {sample.sample_id}")
         self._samples.append(sample)
 
     def get_all(self) -> list[Sample]:
