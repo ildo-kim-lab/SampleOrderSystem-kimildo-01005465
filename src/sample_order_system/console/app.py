@@ -1,5 +1,6 @@
 from typing import Callable
 
+from sample_order_system.console.controller import register_sample
 from sample_order_system.console.state import AppState
 from sample_order_system.console.view import format_main_menu
 
@@ -33,10 +34,13 @@ def run_sample_menu(
     input_func: Callable[[str], str],
     output_func: Callable[[str], None],
 ) -> None:
-    choice = input_func("선택: ")
-    action = resolve_sample_menu_choice(choice)
-    if action == "뒤로가기":
-        return
+    while True:
+        choice = input_func("선택: ")
+        action = resolve_sample_menu_choice(choice)
+        if action == "뒤로가기":
+            return
+        if action == "등록":
+            register_sample(state.sample_registry, input_func, output_func)
 
 
 def run_app(
