@@ -2,8 +2,6 @@ import pytest
 
 from sample_order_system.console.app import (
     resolve_main_menu_choice,
-    resolve_order_menu_choice,
-    resolve_sample_menu_choice,
     run_app,
 )
 from sample_order_system.console.state import AppState
@@ -208,31 +206,3 @@ def test_run_app_routes_dummy_data_menu_choice():
 
     assert len(state.sample_registry.get_all()) >= 3
     assert len(state.order_registry.get_all()) == 5
-
-
-@pytest.mark.parametrize(
-    "choice,expected",
-    [
-        ("1", "등록"),
-        ("2", "조회"),
-        ("3", "검색"),
-        ("0", "뒤로가기"),
-        ("9", None),
-    ],
-)
-def test_resolve_sample_menu_choice(choice, expected):
-    assert resolve_sample_menu_choice(choice) == expected
-
-
-@pytest.mark.parametrize(
-    "choice,expected",
-    [
-        ("1", "접수"),
-        ("2", "승인"),
-        ("3", "거절"),
-        ("0", "뒤로가기"),
-        ("9", None),
-    ],
-)
-def test_resolve_order_menu_choice(choice, expected):
-    assert resolve_order_menu_choice(choice) == expected

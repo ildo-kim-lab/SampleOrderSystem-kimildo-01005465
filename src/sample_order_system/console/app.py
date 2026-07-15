@@ -66,10 +66,6 @@ _SAMPLE_MENU_CHOICES = {
 }
 
 
-def resolve_sample_menu_choice(choice: str) -> str | None:
-    return _SAMPLE_MENU_CHOICES.get(choice)
-
-
 _ORDER_MENU_CHOICES = {
     "0": "뒤로가기",
     "1": "접수",
@@ -78,20 +74,12 @@ _ORDER_MENU_CHOICES = {
 }
 
 
-def resolve_order_menu_choice(choice: str) -> str | None:
-    return _ORDER_MENU_CHOICES.get(choice)
-
-
 _PRODUCTION_MENU_CHOICES = {
     "0": "뒤로가기",
     "1": "생산 현황",
     "2": "대기 주문 확인",
     "3": "생산 완료 처리",
 }
-
-
-def resolve_production_menu_choice(choice: str) -> str | None:
-    return _PRODUCTION_MENU_CHOICES.get(choice)
 
 
 def _select_order_by_status(
