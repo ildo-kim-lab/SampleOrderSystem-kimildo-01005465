@@ -1,16 +1,15 @@
 # PLAN.md (이번 증분)
 
 ## 목표
-JSON 파일에서 주문 목록을 읽어와 `OrderRegistry`를 복원할 수 있다
-(상태 문자열을 `OrderStatus`로 복원).
+프로그램 종료("0") 시 현재 시료/주문 데이터를 지정된 파일에 자동으로
+저장한다.
 
 ## 검증할 동작
-`load_orders(filepath)`는 `save_orders`가 저장한 JSON 파일을 읽어, 동일한
-필드와 상태를 가진 주문들이 등록된 `OrderRegistry`를 반환한다.
+`run_app(state, input_func, output_func, sample_filepath, order_filepath)`에서
+"0"을 입력해 종료하면, 두 파일에 현재 상태가 저장된다.
 
 ## 근거
-- `docs/PRD.md` 5.8 데이터 영속성
+- `docs/PRD.md` 5.8 데이터 영속성 — 프로그램 종료 시 저장
 
 ## 범위 외
-- 파일이 없을 때의 처리, 프로그램 시작/종료 시점과의 실제 연동은 다음
-  증분들에서 다룬다.
+- 프로그램 시작 시 로드하는 것은 다음 증분에서 다룬다.
