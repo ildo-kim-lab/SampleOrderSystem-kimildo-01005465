@@ -1,8 +1,10 @@
 from sample_order_system.console.production_controller import (
     complete_production_console,
     list_waiting_orders,
+    show_production_status,
 )
 from sample_order_system.domain.order import Order, OrderStatus
+from sample_order_system.domain.production_line_status import ProductionLine
 from sample_order_system.domain.production_queue import ProductionQueue
 from sample_order_system.domain.sample import Sample, SampleRegistry
 
@@ -43,3 +45,22 @@ def test_list_waiting_orders_outputs_orders_in_fifo_order():
         "S-001 | A | 수량: 3",
         "S-002 | B | 수량: 5",
     ]
+
+
+def test_show_production_status_reports_current_order_progress():
+    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    line = ProductionLine(current_order=order, produced_quantity=4)
+    outputs = []
+
+    show_production_status(line, output_func=outputs.append)
+
+    assert outputs == ["S-001 | ACME Corp | 생산량: 4"]
+
+
+def test_show_production_status_reports_no_order_when_idle():
+    line = ProductionLine()
+    outputs = []
+
+    show_production_status(line, output_func=outputs.append)
+
+    assert outputs == ["생산 중인 주문 없음"]
