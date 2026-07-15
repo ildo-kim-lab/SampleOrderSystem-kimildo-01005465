@@ -7,7 +7,8 @@ from sample_order_system.console.app import (
     run_app,
 )
 from sample_order_system.console.state import AppState
-from sample_order_system.domain.order import Order
+from sample_order_system.domain.order import Order, OrderStatus
+from sample_order_system.domain.sample import Sample
 
 
 @pytest.mark.parametrize(
@@ -113,6 +114,33 @@ def test_run_app_routes_monitoring_menu_choice():
 
     combined_output = "\n".join(outputs)
     assert "RESERVED: 1" in combined_output
+
+
+def test_run_app_routes_release_menu_choice():
+    state = AppState()
+    state.sample_registry.register(
+        Sample(
+            sample_id="S-001",
+            name="Wafer-A",
+            avg_production_time=2.5,
+            yield_rate=0.9,
+            stock=50,
+        )
+    )
+    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    order.status = OrderStatus.CONFIRMED
+    state.order_registry.register(order)
+    inputs = iter(["4", "1", "0"])
+    outputs = []
+
+    run_app(
+        state,
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    assert order.status == OrderStatus.RELEASED
+    assert state.sample_registry.find_by_id("S-001").stock == 40
 
 
 @pytest.mark.parametrize(
