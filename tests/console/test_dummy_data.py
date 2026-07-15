@@ -41,3 +41,12 @@ def test_generate_dummy_orders_covers_all_five_statuses():
         OrderStatus.CONFIRMED,
         OrderStatus.RELEASED,
     }
+
+
+def test_generate_dummy_orders_is_idempotent_when_called_twice():
+    registry = OrderRegistry()
+    generate_dummy_orders(registry)
+
+    generate_dummy_orders(registry)
+
+    assert len(registry.get_all()) == 5
