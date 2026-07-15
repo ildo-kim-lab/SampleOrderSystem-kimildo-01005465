@@ -1,17 +1,16 @@
 # PLAN.md (이번 증분)
 
 ## 목표
-프로그램 시작 시 저장된 파일이 있으면 이를 로드해서 이전 상태로 이어서
-시작하고, 파일이 없으면 빈 상태로 시작한다.
+`python -m sample_order_system`으로 실제 콘솔 프로그램을 실행할 수 있다
+(실제 `input()`/`print()`와 고정 저장 파일 경로를 사용).
 
 ## 검증할 동작
-`start_app(sample_filepath, order_filepath, input_func, output_func)`는
-파일이 존재하면 그 내용으로 채워진 `AppState`를 사용해 `run_app`을 실행하고,
-파일이 없으면 빈 `AppState`로 시작한다 (오류 없이).
+`main()` 함수는 실제 `input`/`print`를 `start_app`에 연결해서 호출한다.
+단위 테스트에서는 `input`/`print`를 대체(monkeypatch)해서 `main()`이
+`start_app`을 올바른 인자로 호출하는지 확인한다.
 
 ## 근거
-- `docs/PRD.md` 5.8 데이터 영속성 — 프로그램 시작 시 저장 파일 로드,
-  없으면 빈 상태로 시작
+- `docs/PRD.md` 1. 배경 및 목적 — 콘솔 기반으로 동작
 
 ## 범위 외
-- 콘솔 스크립트 진입점(`__main__`) 연결은 다음 증분에서 다룬다.
+- 저장 파일 경로를 사용자가 지정하는 옵션(커맨드라인 인자 등)은 다루지 않는다.
