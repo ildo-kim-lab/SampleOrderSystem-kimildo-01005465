@@ -7,6 +7,7 @@ class Sample:
     name: str
     avg_production_time: float
     yield_rate: float
+    stock: int = 0
 
 
 class SampleRegistry:
