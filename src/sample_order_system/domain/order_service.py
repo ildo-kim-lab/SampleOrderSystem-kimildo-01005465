@@ -22,7 +22,7 @@ def release_order(order: Order, registry: SampleRegistry) -> None:
 
 
 def complete_order_production(order: Order, registry: SampleRegistry) -> None:
-    sample = registry.find_by_id(order.sample_id)
+    sample = _get_sample_or_raise(registry, order.sample_id)
     shortage = order.quantity - sample.stock
     production_quantity = calculate_production_quantity(shortage, sample.yield_rate)
     order.complete_production()
