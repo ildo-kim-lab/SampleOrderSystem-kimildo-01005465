@@ -10,6 +10,9 @@ class OrderStatus(Enum):
     RELEASED = "RELEASED"
 
 
+_TERMINAL_STATUSES = (OrderStatus.REJECTED, OrderStatus.RELEASED)
+
+
 @dataclass
 class Order:
     sample_id: str
@@ -18,6 +21,8 @@ class Order:
     status: OrderStatus = field(default=OrderStatus.RESERVED)
 
     def reject(self) -> None:
+        if self.status in _TERMINAL_STATUSES:
+            raise ValueError(f"종료 상태({self.status.value})에서는 거절할 수 없습니다")
         self.status = OrderStatus.REJECTED
 
     def approve(self, available_stock: int) -> None:
