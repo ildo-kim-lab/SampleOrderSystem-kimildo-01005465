@@ -9,6 +9,9 @@ class Sample:
     yield_rate: float
     stock: int = 0
 
+    def decrease_stock(self, quantity: int) -> None:
+        self.stock -= quantity
+
 
 class SampleRegistry:
     def __init__(self) -> None:
