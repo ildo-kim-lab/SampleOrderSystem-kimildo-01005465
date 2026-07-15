@@ -111,4 +111,4 @@ CONFIRMED --(출고 처리)--> RELEASED
 - 모니터링 메뉴에서 `REJECTED` 주문이 집계에서 제외됨을 확인할 수 있다.
 - 생산 큐가 FIFO 순서로 처리됨을 확인할 수 있다.
 
-> 원본 요구사항: [docs/S-semi.txt](docs/S-semi.txt)
+> 원본 요구사항: [S-semi.txt](S-semi.txt)
