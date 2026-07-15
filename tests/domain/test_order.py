@@ -1,3 +1,5 @@
+import pytest
+
 from sample_order_system.domain.order import Order, OrderStatus
 
 
@@ -71,3 +73,20 @@ def test_complete_production_transitions_producing_order_to_confirmed():
     order.complete_production()
 
     assert order.status == OrderStatus.CONFIRMED
+
+
+def test_reject_raises_when_order_already_rejected():
+    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    order.reject()
+
+    with pytest.raises(ValueError):
+        order.reject()
+
+
+def test_reject_raises_when_order_already_released():
+    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    order.approve(available_stock=10)
+    order.release()
+
+    with pytest.raises(ValueError):
+        order.reject()
