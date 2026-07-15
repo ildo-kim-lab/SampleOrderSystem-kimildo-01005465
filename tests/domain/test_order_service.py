@@ -1,3 +1,5 @@
+import pytest
+
 from sample_order_system.domain.order import Order, OrderStatus
 from sample_order_system.domain.order_service import (
     approve_order,
@@ -62,3 +64,11 @@ def test_complete_order_production_increases_stock_by_actual_production_quantity
     assert order.status == OrderStatus.CONFIRMED
     # shortage = 10 - 3 = 7, production_quantity = ceil(7 / 0.9) = 8
     assert registry.find_by_id("S-001").stock == 11
+
+
+def test_approve_order_raises_when_sample_not_found():
+    registry = SampleRegistry()
+    order = Order(sample_id="S-404", customer_name="ACME Corp", quantity=10)
+
+    with pytest.raises(ValueError, match="S-404"):
+        approve_order(order, registry)
