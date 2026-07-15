@@ -68,3 +68,5 @@ def run_app(
             output_func("잘못된 선택입니다")
             continue
         output_func(f"[{menu_name}]")
+        if menu_name == "시료관리":
+            run_sample_menu(state, input_func, output_func)
