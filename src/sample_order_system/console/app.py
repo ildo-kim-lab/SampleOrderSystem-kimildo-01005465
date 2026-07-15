@@ -51,6 +51,25 @@ def resolve_order_menu_choice(choice: str) -> str | None:
     return _ORDER_MENU_CHOICES.get(choice)
 
 
+def _select_reserved_order(
+    state: AppState,
+    input_func: Callable[[str], str],
+    output_func: Callable[[str], None],
+    prompt: str,
+):
+    reserved_orders = [
+        order
+        for order in state.order_registry.get_all()
+        if order.status == OrderStatus.RESERVED
+    ]
+    for index, order in enumerate(reserved_orders, start=1):
+        output_func(
+            f"{index}. {order.sample_id} | {order.customer_name} | 수량: {order.quantity}"
+        )
+    index_choice = int(input_func(prompt))
+    return reserved_orders[index_choice - 1]
+
+
 def run_sample_menu(
     state: AppState,
     input_func: Callable[[str], str],
@@ -83,30 +102,14 @@ def run_order_menu(
         if action == "접수":
             create_order(state.order_registry, input_func, output_func)
         elif action == "승인":
-            reserved_orders = [
-                order
-                for order in state.order_registry.get_all()
-                if order.status == OrderStatus.RESERVED
-            ]
-            for index, order in enumerate(reserved_orders, start=1):
-                output_func(
-                    f"{index}. {order.sample_id} | {order.customer_name} | 수량: {order.quantity}"
-                )
-            index_choice = int(input_func("승인할 번호: "))
-            selected_order = reserved_orders[index_choice - 1]
+            selected_order = _select_reserved_order(
+                state, input_func, output_func, "승인할 번호: "
+            )
             approve_order_console(selected_order, state.sample_registry, output_func)
         elif action == "거절":
-            reserved_orders = [
-                order
-                for order in state.order_registry.get_all()
-                if order.status == OrderStatus.RESERVED
-            ]
-            for index, order in enumerate(reserved_orders, start=1):
-                output_func(
-                    f"{index}. {order.sample_id} | {order.customer_name} | 수량: {order.quantity}"
-                )
-            index_choice = int(input_func("거절할 번호: "))
-            selected_order = reserved_orders[index_choice - 1]
+            selected_order = _select_reserved_order(
+                state, input_func, output_func, "거절할 번호: "
+            )
             reject_order_console(selected_order, output_func)
 
 
