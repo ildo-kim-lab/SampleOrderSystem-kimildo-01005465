@@ -16,6 +16,18 @@ def resolve_main_menu_choice(choice: str) -> str | None:
     return _MAIN_MENU_CHOICES.get(choice)
 
 
+_SAMPLE_MENU_CHOICES = {
+    "0": "뒤로가기",
+    "1": "등록",
+    "2": "조회",
+    "3": "검색",
+}
+
+
+def resolve_sample_menu_choice(choice: str) -> str | None:
+    return _SAMPLE_MENU_CHOICES.get(choice)
+
+
 def run_app(
     state: AppState,
     input_func: Callable[[str], str],
