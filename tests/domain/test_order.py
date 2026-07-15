@@ -21,3 +21,15 @@ def test_reject_transitions_reserved_order_to_rejected():
     order.reject()
 
     assert order.status == OrderStatus.REJECTED
+
+
+def test_approve_confirms_order_when_stock_is_sufficient():
+    order = Order(
+        sample_id="S-001",
+        customer_name="ACME Corp",
+        quantity=10,
+    )
+
+    order.approve(available_stock=10)
+
+    assert order.status == OrderStatus.CONFIRMED
