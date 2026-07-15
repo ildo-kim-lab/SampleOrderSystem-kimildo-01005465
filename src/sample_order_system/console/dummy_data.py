@@ -29,7 +29,8 @@ _DUMMY_SAMPLES = [
 
 def generate_dummy_samples(sample_registry: SampleRegistry) -> None:
     for sample in _DUMMY_SAMPLES:
-        sample_registry.register(sample)
+        if sample_registry.find_by_id(sample.sample_id) is None:
+            sample_registry.register(sample)
 
 
 def generate_dummy_orders(order_registry: OrderRegistry) -> None:
