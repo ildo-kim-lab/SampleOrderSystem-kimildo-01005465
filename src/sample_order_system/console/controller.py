@@ -10,8 +10,12 @@ def register_sample(
 ) -> None:
     sample_id = input_func("시료 ID: ")
     name = input_func("이름: ")
-    avg_production_time = float(input_func("평균 생산시간: "))
-    yield_rate = float(input_func("수율: "))
+    try:
+        avg_production_time = float(input_func("평균 생산시간: "))
+        yield_rate = float(input_func("수율: "))
+    except ValueError:
+        output_func("숫자 형식이 올바르지 않습니다")
+        return
 
     sample = Sample(
         sample_id=sample_id,
