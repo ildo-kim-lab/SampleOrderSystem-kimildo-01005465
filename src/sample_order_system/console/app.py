@@ -14,6 +14,10 @@ from sample_order_system.console.order_controller import (
     create_order,
     reject_order_console,
 )
+from sample_order_system.console.production_controller import (
+    list_waiting_orders,
+    show_production_status,
+)
 from sample_order_system.console.release_controller import release_order_console
 from sample_order_system.console.state import AppState
 from sample_order_system.console.view import format_main_menu
@@ -145,3 +149,6 @@ def run_app(
                 state, OrderStatus.CONFIRMED, input_func, output_func, "출고할 번호: "
             )
             release_order_console(selected_order, state.sample_registry, output_func)
+        elif menu_name == "생산 라인":
+            show_production_status(state.production_line, output_func)
+            list_waiting_orders(state.production_queue, output_func)
