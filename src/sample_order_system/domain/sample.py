@@ -12,6 +12,9 @@ class Sample:
     def decrease_stock(self, quantity: int) -> None:
         self.stock -= quantity
 
+    def increase_stock(self, quantity: int) -> None:
+        self.stock += quantity
+
 
 class SampleRegistry:
     def __init__(self) -> None:
