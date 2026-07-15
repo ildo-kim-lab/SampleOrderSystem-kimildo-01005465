@@ -25,3 +25,6 @@ class Order:
             self.status = OrderStatus.CONFIRMED
         else:
             self.status = OrderStatus.PRODUCING
+
+    def release(self) -> None:
+        self.status = OrderStatus.RELEASED
