@@ -3,8 +3,10 @@ from typing import Callable
 
 from sample_order_system.persistence import (
     load_orders,
+    load_production_queue,
     load_samples,
     save_orders,
+    save_production_queue,
     save_samples,
 )
 
@@ -139,6 +141,7 @@ def run_app(
     output_func: Callable[[str], None],
     sample_filepath: Path | None = None,
     order_filepath: Path | None = None,
+    queue_filepath: Path | None = None,
 ) -> None:
     while True:
         output_func(format_main_menu())
@@ -148,6 +151,8 @@ def run_app(
                 save_samples(state.sample_registry, sample_filepath)
             if order_filepath is not None:
                 save_orders(state.order_registry, order_filepath)
+            if queue_filepath is not None:
+                save_production_queue(state.production_queue, queue_filepath)
             output_func("프로그램을 종료합니다")
             return
         if choice == "9":
@@ -182,10 +187,20 @@ def start_app(
     order_filepath: Path,
     input_func: Callable[[str], str],
     output_func: Callable[[str], None],
+    queue_filepath: Path | None = None,
 ) -> None:
     state = AppState()
     if sample_filepath.exists():
         state.sample_registry = load_samples(sample_filepath)
     if order_filepath.exists():
         state.order_registry = load_orders(order_filepath)
-    run_app(state, input_func, output_func, sample_filepath, order_filepath)
+    if queue_filepath is not None and queue_filepath.exists():
+        state.production_queue = load_production_queue(queue_filepath)
+    run_app(
+        state,
+        input_func,
+        output_func,
+        sample_filepath,
+        order_filepath,
+        queue_filepath,
+    )
