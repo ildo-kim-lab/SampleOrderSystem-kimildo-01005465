@@ -46,6 +46,21 @@ def test_register_sample_reports_friendly_message_on_duplicate_id():
     assert any("이미 등록된" in message for message in outputs)
 
 
+def test_register_sample_reports_friendly_message_on_non_numeric_input():
+    registry = SampleRegistry()
+    inputs = iter(["S-001", "Wafer-A", "abc", "0.9"])
+    outputs = []
+
+    register_sample(
+        registry,
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    assert any("숫자" in message for message in outputs)
+    assert registry.find_by_id("S-001") is None
+
+
 def test_list_samples_outputs_name_and_stock_for_each_sample():
     registry = SampleRegistry()
     registry.register(
