@@ -1,21 +1,21 @@
 # CURRENT_PLAN.md (이번 증분)
 
-## 목표 (CleanCode)
-`Order.reject()`도 `approve()`/`release()`/`complete_production()`과 동일하게
-정확히 하나의 선행 상태(RESERVED)에서만 허용하도록 전제조건을 강화한다.
-(Clean Code 리뷰에서 발견된 항목 1: `reject()`만 `_check_not_terminal`을
-써서 PRODUCING/CONFIRMED 상태에서도 거절이 가능한 비일관성)
+## 목표 (CleanCode, 순수 리팩터링)
+`persistence._dict_to_order`와 `console/dummy_data.generate_dummy_orders`가
+`order.status = X`로 생성 후 상태 필드를 직접 대입하던 것을, `Order(...,
+status=X)` 생성자 인자로 바꾼다. (Clean Code 리뷰 finding 2)
 
 ## 검증할 동작
-`PRODUCING` 상태인 주문에 대해 `reject()`를 호출하면 `ValueError`가
-발생한다.
+새로운 외부 동작 변화는 없다 — 기존 테스트(`test_load_orders_restores_...`,
+`test_generate_dummy_orders_covers_all_five_statuses` 등)가 리팩터링 전후
+모두 그대로 통과해야 한다. Order는 이미 `status` 필드를 생성자 인자로
+받으므로 별도 메서드 추가 없이 대입 방식만 바꾼다.
 
 ## 근거
-- `docs/PRD.md` 5.4 주문 승인/거절 — 거절은 접수된(RESERVED) 주문에 대한
-  동작이다.
-- Clean Code 리뷰 finding 1: `reject()`의 가드가 다른 세 전이 메서드와
-  다른 방식(`_check_not_terminal` vs `_check_status_is`)이라 PRODUCING/
-  CONFIRMED 상태에서도 거절이 통과되는 비일관성이 있었다.
+- `CLAUDE.md`: "주문 상태 전이는 반드시 하나의 함수/클래스(상태 머신)를
+  통해서만 이루어져야 한다." 생성 이후 상태 필드를 직접 덮어쓰는 대신,
+  생성 시점에 상태를 지정하는 방식으로 전이 메서드 우회를 없앤다.
 
 ## 범위 외
-- 없음 (이 증분으로 finding 1이 마무리된다).
+- 없음 (이 증분으로 finding 2가 마무리된다). 순수 리팩터링이므로 RED 단계
+  없이 진행하고, 리팩터링 전후 테스트가 계속 GREEN임을 확인한다.

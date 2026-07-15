@@ -36,13 +36,12 @@ def save_orders(order_registry: OrderRegistry, filepath: Path) -> None:
 
 
 def _dict_to_order(entry: dict) -> Order:
-    order = Order(
+    return Order(
         sample_id=entry["sample_id"],
         customer_name=entry["customer_name"],
         quantity=entry["quantity"],
+        status=OrderStatus(entry["status"]),
     )
-    order.status = OrderStatus(entry["status"])
-    return order
 
 
 def load_orders(filepath: Path) -> OrderRegistry:

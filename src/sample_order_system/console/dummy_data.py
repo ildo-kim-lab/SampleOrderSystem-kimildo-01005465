@@ -33,19 +33,32 @@ def generate_dummy_samples(sample_registry: SampleRegistry) -> None:
 
 
 def generate_dummy_orders(order_registry: OrderRegistry) -> None:
-    reserved = Order(sample_id="S-001", customer_name="Customer A", quantity=5)
-
-    rejected = Order(sample_id="S-001", customer_name="Customer B", quantity=3)
-    rejected.status = OrderStatus.REJECTED
-
-    producing = Order(sample_id="S-002", customer_name="Customer C", quantity=20)
-    producing.status = OrderStatus.PRODUCING
-
-    confirmed = Order(sample_id="S-001", customer_name="Customer D", quantity=10)
-    confirmed.status = OrderStatus.CONFIRMED
-
-    released = Order(sample_id="S-001", customer_name="Customer E", quantity=8)
-    released.status = OrderStatus.RELEASED
-
-    for order in (reserved, rejected, producing, confirmed, released):
+    orders = [
+        Order(sample_id="S-001", customer_name="Customer A", quantity=5),
+        Order(
+            sample_id="S-001",
+            customer_name="Customer B",
+            quantity=3,
+            status=OrderStatus.REJECTED,
+        ),
+        Order(
+            sample_id="S-002",
+            customer_name="Customer C",
+            quantity=20,
+            status=OrderStatus.PRODUCING,
+        ),
+        Order(
+            sample_id="S-001",
+            customer_name="Customer D",
+            quantity=10,
+            status=OrderStatus.CONFIRMED,
+        ),
+        Order(
+            sample_id="S-001",
+            customer_name="Customer E",
+            quantity=8,
+            status=OrderStatus.RELEASED,
+        ),
+    ]
+    for order in orders:
         order_registry.register(order)
