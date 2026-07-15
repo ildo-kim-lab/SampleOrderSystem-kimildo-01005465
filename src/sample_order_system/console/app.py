@@ -18,6 +18,10 @@ from sample_order_system.console.production_controller import (
     list_waiting_orders,
     show_production_status,
 )
+from sample_order_system.console.dummy_data import (
+    generate_dummy_orders,
+    generate_dummy_samples,
+)
 from sample_order_system.console.release_controller import release_order_console
 from sample_order_system.console.state import AppState
 from sample_order_system.console.view import format_main_menu
@@ -132,6 +136,11 @@ def run_app(
         if choice == "0":
             output_func("프로그램을 종료합니다")
             return
+        if choice == "9":
+            generate_dummy_samples(state.sample_registry)
+            generate_dummy_orders(state.order_registry)
+            output_func("더미 데이터 생성 완료")
+            continue
         menu_name = resolve_main_menu_choice(choice)
         if menu_name is None:
             output_func("잘못된 선택입니다")

@@ -41,7 +41,7 @@ def test_run_app_exits_on_zero_choice():
 
 
 def test_run_app_reports_invalid_choice_and_continues():
-    inputs = iter(["9", "0"])
+    inputs = iter(["99", "0"])
     outputs = []
 
     run_app(
