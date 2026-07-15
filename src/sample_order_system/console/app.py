@@ -1,7 +1,12 @@
 from pathlib import Path
 from typing import Callable
 
-from sample_order_system.persistence import save_orders, save_samples
+from sample_order_system.persistence import (
+    load_orders,
+    load_samples,
+    save_orders,
+    save_samples,
+)
 
 from sample_order_system.console.controller import (
     list_samples,
@@ -170,3 +175,17 @@ def run_app(
         elif menu_name == "생산 라인":
             show_production_status(state.production_line, output_func)
             list_waiting_orders(state.production_queue, output_func)
+
+
+def start_app(
+    sample_filepath: Path,
+    order_filepath: Path,
+    input_func: Callable[[str], str],
+    output_func: Callable[[str], None],
+) -> None:
+    state = AppState()
+    if sample_filepath.exists():
+        state.sample_registry = load_samples(sample_filepath)
+    if order_filepath.exists():
+        state.order_registry = load_orders(order_filepath)
+    run_app(state, input_func, output_func, sample_filepath, order_filepath)
