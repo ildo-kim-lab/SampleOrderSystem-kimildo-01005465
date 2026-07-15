@@ -90,3 +90,11 @@ def test_reject_raises_when_order_already_released():
 
     with pytest.raises(ValueError):
         order.reject()
+
+
+def test_approve_raises_when_order_already_rejected():
+    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    order.reject()
+
+    with pytest.raises(ValueError):
+        order.approve(available_stock=10)
