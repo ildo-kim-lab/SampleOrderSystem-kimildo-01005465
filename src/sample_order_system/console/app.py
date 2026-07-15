@@ -34,6 +34,7 @@ from sample_order_system.console.dummy_data import (
     generate_dummy_samples,
 )
 from sample_order_system.console.release_controller import release_order_console
+from sample_order_system.console.selection import select_from_list
 from sample_order_system.console.state import AppState
 from sample_order_system.console.view import (
     format_main_menu,
@@ -103,20 +104,14 @@ def _select_order_by_status(
     matching_orders = [
         order for order in state.order_registry.get_all() if order.status == status
     ]
-    if not matching_orders:
-        output_func("대상 주문이 없습니다")
-        return None
-    for index, order in enumerate(matching_orders, start=1):
-        output_func(f"{index}. {format_order_line(order)}")
-    try:
-        index_choice = int(input_func(prompt))
-    except ValueError:
-        output_func("숫자 형식이 올바르지 않습니다")
-        return None
-    if not 1 <= index_choice <= len(matching_orders):
-        output_func("잘못된 번호입니다")
-        return None
-    return matching_orders[index_choice - 1]
+    return select_from_list(
+        matching_orders,
+        format_order_line,
+        input_func,
+        output_func,
+        prompt,
+        "대상 주문이 없습니다",
+    )
 
 
 def _run_menu_loop(

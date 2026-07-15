@@ -1,5 +1,6 @@
 from typing import Callable
 
+from sample_order_system.console.selection import select_from_list
 from sample_order_system.console.view import format_sample_line
 from sample_order_system.domain.order import Order
 from sample_order_system.domain.order_registry import OrderRegistry
@@ -15,20 +16,16 @@ def create_order(
     output_func: Callable[[str], None],
 ) -> None:
     samples = sample_registry.get_all()
-    if not samples:
-        output_func("등록된 시료가 없습니다")
+    selected_sample = select_from_list(
+        samples,
+        format_sample_line,
+        input_func,
+        output_func,
+        "시료 번호: ",
+        "등록된 시료가 없습니다",
+    )
+    if selected_sample is None:
         return
-    for index, sample in enumerate(samples, start=1):
-        output_func(f"{index}. {format_sample_line(sample)}")
-    try:
-        sample_index = int(input_func("시료 번호: "))
-    except ValueError:
-        output_func("숫자 형식이 올바르지 않습니다")
-        return
-    if not 1 <= sample_index <= len(samples):
-        output_func("잘못된 번호입니다")
-        return
-    selected_sample = samples[sample_index - 1]
 
     customer_name = input_func("고객명: ")
     try:
