@@ -2,6 +2,7 @@ import json
 from dataclasses import asdict
 from pathlib import Path
 
+from sample_order_system.domain.order import Order, OrderStatus
 from sample_order_system.domain.order_registry import OrderRegistry
 from sample_order_system.domain.sample import Sample, SampleRegistry
 
@@ -30,3 +31,17 @@ def save_orders(order_registry: OrderRegistry, filepath: Path) -> None:
         for order in order_registry.get_all()
     ]
     filepath.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+
+def load_orders(filepath: Path) -> OrderRegistry:
+    registry = OrderRegistry()
+    data = json.loads(filepath.read_text(encoding="utf-8"))
+    for entry in data:
+        order = Order(
+            sample_id=entry["sample_id"],
+            customer_name=entry["customer_name"],
+            quantity=entry["quantity"],
+        )
+        order.status = OrderStatus(entry["status"])
+        registry.register(order)
+    return registry
