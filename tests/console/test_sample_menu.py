@@ -20,6 +20,23 @@ def test_run_sample_menu_returns_immediately_on_back_choice():
         next(inputs)
 
 
+def test_run_sample_menu_displays_menu_items_before_prompting():
+    state = AppState()
+    inputs = iter(["0"])
+    outputs = []
+
+    run_sample_menu(
+        state,
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    combined_output = "\n".join(outputs)
+    assert "등록" in combined_output
+    assert "조회" in combined_output
+    assert "검색" in combined_output
+
+
 def test_run_sample_menu_registers_sample_then_returns_to_menu():
     state = AppState()
     inputs = iter(["1", "S-001", "Wafer-A", "2.5", "0.9", "0"])
