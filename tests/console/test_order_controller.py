@@ -8,13 +8,28 @@ from sample_order_system.domain.order_registry import OrderRegistry
 from sample_order_system.domain.sample import Sample, SampleRegistry
 
 
-def test_create_order_adds_reserved_order_with_entered_values():
+def _sample_registry_with_one_sample() -> SampleRegistry:
+    registry = SampleRegistry()
+    registry.register(
+        Sample(
+            sample_id="S-001",
+            name="Wafer-A",
+            avg_production_time=2.5,
+            yield_rate=0.9,
+        )
+    )
+    return registry
+
+
+def test_create_order_adds_reserved_order_for_selected_sample():
     order_registry = OrderRegistry()
-    inputs = iter(["S-001", "ACME Corp", "10"])
+    sample_registry = _sample_registry_with_one_sample()
+    inputs = iter(["1", "ACME Corp", "10"])
     outputs = []
 
     create_order(
         order_registry,
+        sample_registry,
         input_func=lambda prompt="": next(inputs),
         output_func=outputs.append,
     )
@@ -27,13 +42,64 @@ def test_create_order_adds_reserved_order_with_entered_values():
     assert orders[0].status == OrderStatus.RESERVED
 
 
-def test_create_order_reports_friendly_message_on_non_numeric_quantity():
+def test_create_order_lists_samples_with_index_before_prompting():
     order_registry = OrderRegistry()
-    inputs = iter(["S-001", "ACME Corp", "abc"])
+    sample_registry = _sample_registry_with_one_sample()
+    inputs = iter(["1", "ACME Corp", "10"])
     outputs = []
 
     create_order(
         order_registry,
+        sample_registry,
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    assert any("1. S-001" in message for message in outputs)
+
+
+def test_create_order_reports_message_and_aborts_when_no_samples_registered():
+    order_registry = OrderRegistry()
+    sample_registry = SampleRegistry()
+    outputs = []
+
+    create_order(
+        order_registry,
+        sample_registry,
+        input_func=lambda prompt="": (_ for _ in ()).throw(AssertionError("input requested")),
+        output_func=outputs.append,
+    )
+
+    assert any("등록된 시료가 없습니다" in message for message in outputs)
+    assert order_registry.get_all() == []
+
+
+def test_create_order_reports_friendly_message_on_out_of_range_sample_index():
+    order_registry = OrderRegistry()
+    sample_registry = _sample_registry_with_one_sample()
+    inputs = iter(["99"])
+    outputs = []
+
+    create_order(
+        order_registry,
+        sample_registry,
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    assert any("잘못된 번호" in message for message in outputs)
+    assert order_registry.get_all() == []
+
+
+def test_create_order_reports_friendly_message_on_non_numeric_quantity():
+    order_registry = OrderRegistry()
+    sample_registry = _sample_registry_with_one_sample()
+    inputs = iter(["1", "ACME Corp", "abc"])
+    outputs = []
+
+    create_order(
+        order_registry,
+        sample_registry,
         input_func=lambda prompt="": next(inputs),
         output_func=outputs.append,
     )
