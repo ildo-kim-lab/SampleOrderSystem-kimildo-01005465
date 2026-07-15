@@ -40,7 +40,15 @@ def test_run_order_menu_displays_menu_items_before_prompting():
 
 def test_run_order_menu_creates_order_then_returns_to_menu():
     state = AppState()
-    inputs = iter(["1", "S-001", "ACME Corp", "10", "0"])
+    state.sample_registry.register(
+        Sample(
+            sample_id="S-001",
+            name="Wafer-A",
+            avg_production_time=2.5,
+            yield_rate=0.9,
+        )
+    )
+    inputs = iter(["1", "1", "ACME Corp", "10", "0"])
     outputs = []
 
     run_order_menu(

@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 import sys
@@ -41,14 +42,17 @@ def test_console_smoke_saves_persistence_files_on_exit(tmp_path):
 
 
 def test_console_smoke_full_order_flow_reflected_in_saved_state(tmp_path):
-    # 9=더미 데이터, 2=주문메뉴, 1=접수(S-001/Customer1/5), 2=승인(1번 선택),
-    # 0=주문메뉴에서 뒤로가기, 4=출고 처리(1번 선택), 0=종료
-    inputs = "9\n2\n1\nS-001\nCustomer1\n5\n2\n1\n0\n4\n1\n0\n"
+    # 9=더미 데이터, 2=주문메뉴, 1=접수(시료 1번=S-001 선택/Customer1/5),
+    # 2=승인(방금 만든 주문은 RESERVED 목록의 2번째), 0=주문메뉴에서 뒤로가기,
+    # 4=출고 처리(방금 승인한 주문은 CONFIRMED 목록의 2번째), 0=종료
+    inputs = "9\n2\n1\n1\nCustomer1\n5\n2\n2\n0\n4\n2\n0\n"
 
     result = run_console(inputs, cwd=tmp_path)
 
     assert result.returncode == 0
     assert "RELEASED" in result.stdout
 
-    saved_orders = (tmp_path / "orders.json").read_text(encoding="utf-8")
-    assert '"status": "RELEASED"' in saved_orders
+    saved_orders = json.loads((tmp_path / "orders.json").read_text(encoding="utf-8"))
+    my_order = next(o for o in saved_orders if o["customer_name"] == "Customer1")
+    assert my_order["sample_id"] == "S-001"
+    assert my_order["status"] == "RELEASED"

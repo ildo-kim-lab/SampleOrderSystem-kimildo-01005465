@@ -166,7 +166,9 @@ def run_order_menu(
         format_order_menu(),
         _ORDER_MENU_CHOICES,
         {
-            "접수": lambda: create_order(state.order_registry, input_func, output_func),
+            "접수": lambda: create_order(
+                state.order_registry, state.sample_registry, input_func, output_func
+            ),
             "승인": do_approve,
             "거절": do_reject,
         },

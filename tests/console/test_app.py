@@ -85,7 +85,15 @@ def test_run_app_routes_sample_menu_choice_to_registration():
 
 def test_run_app_routes_order_menu_choice_to_creation():
     state = AppState()
-    inputs = iter(["2", "1", "S-001", "ACME Corp", "10", "0", "0"])
+    state.sample_registry.register(
+        Sample(
+            sample_id="S-001",
+            name="Wafer-A",
+            avg_production_time=2.5,
+            yield_rate=0.9,
+        )
+    )
+    inputs = iter(["2", "1", "1", "ACME Corp", "10", "0", "0"])
     outputs = []
 
     run_app(
