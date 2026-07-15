@@ -63,6 +63,10 @@ pytest tests/test_order.py -v
 
 ## 테스트 전략
 
+새 기능/버그 수정 시 구현 코드 작성 전에 반드시
+[test-driven-development](.claude/skills/test-driven-development/SKILL.md) 스킬(Agentic TDD)을
+따른다 — PLAN.md 작성 → RED → 사람 검수/커밋 문의 → GREEN → REVIEW(사람) → 커밋 문의.
+
 - 상태 전이(승인/거절/생산완료/출고)에 대한 단위 테스트를 우선 작성한다.
 - 재고 부족/충분 경계값(정확히 재고와 주문 수량이 같은 경우 등)을 테스트한다.
 - 실 생산량(`ceil(부족분/수율)`) 계산에 대한 경계값 테스트를 포함한다.
