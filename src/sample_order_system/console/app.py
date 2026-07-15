@@ -5,9 +5,13 @@ from sample_order_system.console.controller import (
     register_sample,
     search_samples,
 )
-from sample_order_system.console.order_controller import create_order
+from sample_order_system.console.order_controller import (
+    approve_order_console,
+    create_order,
+)
 from sample_order_system.console.state import AppState
 from sample_order_system.console.view import format_main_menu
+from sample_order_system.domain.order import OrderStatus
 
 _MAIN_MENU_CHOICES = {
     "1": "시료관리",
@@ -77,6 +81,19 @@ def run_order_menu(
             return
         if action == "접수":
             create_order(state.order_registry, input_func, output_func)
+        elif action == "승인":
+            reserved_orders = [
+                order
+                for order in state.order_registry.get_all()
+                if order.status == OrderStatus.RESERVED
+            ]
+            for index, order in enumerate(reserved_orders, start=1):
+                output_func(
+                    f"{index}. {order.sample_id} | {order.customer_name} | 수량: {order.quantity}"
+                )
+            index_choice = int(input_func("승인할 번호: "))
+            selected_order = reserved_orders[index_choice - 1]
+            approve_order_console(selected_order, state.sample_registry, output_func)
 
 
 def run_app(
