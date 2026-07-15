@@ -36,3 +36,16 @@ def show_production_status(
     output_func(
         f"{order.sample_id} | {order.customer_name} | 생산량: {line.produced_quantity}"
     )
+
+
+def complete_next_production_console(
+    queue: ProductionQueue,
+    sample_registry: SampleRegistry,
+    output_func: Callable[[str], None],
+) -> None:
+    if not queue.list_all():
+        output_func("대기 중인 생산이 없습니다")
+        return
+    order = queue.dequeue()
+    complete_order_production(order, sample_registry)
+    output_func(f"생산 완료 처리됨 -> {order.status.value} ({format_order_line(order)})")
