@@ -29,3 +29,13 @@ def list_samples(
 ) -> None:
     for sample in registry.get_all():
         output_func(f"{sample.sample_id} | {sample.name} | 재고: {sample.stock}")
+
+
+def search_samples(
+    registry: SampleRegistry,
+    keyword: str,
+    output_func: Callable[[str], None],
+) -> None:
+    for sample in registry.get_all():
+        if keyword in sample.name:
+            output_func(f"{sample.sample_id} | {sample.name} | 재고: {sample.stock}")
