@@ -1,15 +1,14 @@
 # PLAN.md (이번 증분)
 
-## 목표
-메인 메뉴에서 "9"를 선택하면 더미 시료/주문 데이터가 한 번에 생성된다.
+## 목표 (Phase 4 시작)
+등록된 시료 목록을 JSON 파일로 저장할 수 있다.
 
 ## 검증할 동작
-`run_app`에 입력으로 "9"(더미 데이터 생성), "0"(종료)을 주면,
-`state.sample_registry`와 `state.order_registry`에 더미 데이터가 채워진다.
+`save_samples(sample_registry, filepath)`를 호출하면, 등록된 각 시료의
+필드(시료 ID/이름/평균 생산시간/수율/재고)가 JSON 배열로 파일에 저장된다.
 
 ## 근거
-- `docs/PLAN.md` Phase 2 — Dummy Data Generator
+- `docs/PRD.md` 5.8 데이터 영속성 — JSON 파일 저장
 
 ## 범위 외
-- 메인 메뉴 화면 텍스트(`format_main_menu`)에 "9" 항목을 명시적으로 추가하는
-  것은 이번 증분에서 함께 처리한다(범위 내). 그 외 UX 개선은 다루지 않는다.
+- 주문/생산 큐 저장, 파일 로드(복원)는 다음 증분들에서 다룬다.
