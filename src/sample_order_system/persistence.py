@@ -35,20 +35,32 @@ def save_orders(order_registry: OrderRegistry, filepath: Path) -> None:
     filepath.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
 
 
+def _dict_to_order(entry: dict) -> Order:
+    order = Order(
+        sample_id=entry["sample_id"],
+        customer_name=entry["customer_name"],
+        quantity=entry["quantity"],
+    )
+    order.status = OrderStatus(entry["status"])
+    return order
+
+
 def load_orders(filepath: Path) -> OrderRegistry:
     registry = OrderRegistry()
     data = json.loads(filepath.read_text(encoding="utf-8"))
     for entry in data:
-        order = Order(
-            sample_id=entry["sample_id"],
-            customer_name=entry["customer_name"],
-            quantity=entry["quantity"],
-        )
-        order.status = OrderStatus(entry["status"])
-        registry.register(order)
+        registry.register(_dict_to_order(entry))
     return registry
 
 
 def save_production_queue(queue: ProductionQueue, filepath: Path) -> None:
     data = [_order_to_dict(order) for order in queue.list_all()]
     filepath.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+
+def load_production_queue(filepath: Path) -> ProductionQueue:
+    queue = ProductionQueue()
+    data = json.loads(filepath.read_text(encoding="utf-8"))
+    for entry in data:
+        queue.enqueue(_dict_to_order(entry))
+    return queue
