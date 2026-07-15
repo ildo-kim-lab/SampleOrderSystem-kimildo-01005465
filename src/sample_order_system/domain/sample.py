@@ -18,18 +18,15 @@ class Sample:
 
 class SampleRegistry:
     def __init__(self) -> None:
-        self._samples: list[Sample] = []
+        self._samples_by_id: dict[str, Sample] = {}
 
     def register(self, sample: Sample) -> None:
-        if self.find_by_id(sample.sample_id) is not None:
+        if sample.sample_id in self._samples_by_id:
             raise ValueError(f"이미 등록된 시료 ID입니다: {sample.sample_id}")
-        self._samples.append(sample)
+        self._samples_by_id[sample.sample_id] = sample
 
     def get_all(self) -> list[Sample]:
-        return list(self._samples)
+        return list(self._samples_by_id.values())
 
     def find_by_id(self, sample_id: str) -> Sample | None:
-        for sample in self._samples:
-            if sample.sample_id == sample_id:
-                return sample
-        return None
+        return self._samples_by_id.get(sample_id)
