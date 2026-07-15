@@ -16,3 +16,6 @@ class Order:
     customer_name: str
     quantity: int
     status: OrderStatus = field(default=OrderStatus.RESERVED)
+
+    def reject(self) -> None:
+        self.status = OrderStatus.REJECTED
