@@ -5,6 +5,7 @@ from sample_order_system.console.order_controller import (
 )
 from sample_order_system.domain.order import Order, OrderStatus
 from sample_order_system.domain.order_registry import OrderRegistry
+from sample_order_system.domain.production_queue import ProductionQueue
 from sample_order_system.domain.sample import Sample, SampleRegistry
 
 
@@ -122,7 +123,9 @@ def test_approve_order_console_confirms_when_stock_is_sufficient():
     order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
     outputs = []
 
-    approve_order_console(order, sample_registry, output_func=outputs.append)
+    approve_order_console(
+        order, sample_registry, ProductionQueue(), output_func=outputs.append
+    )
 
     assert order.status == OrderStatus.CONFIRMED
     assert any("CONFIRMED" in message for message in outputs)

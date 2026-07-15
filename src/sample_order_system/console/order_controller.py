@@ -4,6 +4,7 @@ from sample_order_system.console.view import format_sample_line
 from sample_order_system.domain.order import Order
 from sample_order_system.domain.order_registry import OrderRegistry
 from sample_order_system.domain.order_service import approve_order
+from sample_order_system.domain.production_queue import ProductionQueue
 from sample_order_system.domain.sample import SampleRegistry
 
 
@@ -50,9 +51,10 @@ def create_order(
 def approve_order_console(
     order: Order,
     sample_registry: SampleRegistry,
+    production_queue: ProductionQueue,
     output_func: Callable[[str], None],
 ) -> None:
-    approve_order(order, sample_registry)
+    approve_order(order, sample_registry, production_queue)
     output_func(f"주문 승인 처리됨 -> {order.status.value}")
 
 

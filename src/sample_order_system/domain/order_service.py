@@ -1,5 +1,6 @@
-from sample_order_system.domain.order import Order
+from sample_order_system.domain.order import Order, OrderStatus
 from sample_order_system.domain.production_line import calculate_production_quantity
+from sample_order_system.domain.production_queue import ProductionQueue
 from sample_order_system.domain.sample import Sample, SampleRegistry
 
 
@@ -10,9 +11,13 @@ def _get_sample_or_raise(registry: SampleRegistry, sample_id: str) -> Sample:
     return sample
 
 
-def approve_order(order: Order, registry: SampleRegistry) -> None:
+def approve_order(
+    order: Order, registry: SampleRegistry, production_queue: ProductionQueue
+) -> None:
     sample = _get_sample_or_raise(registry, order.sample_id)
     order.approve(available_stock=sample.stock)
+    if order.status == OrderStatus.PRODUCING:
+        production_queue.enqueue(order)
 
 
 def release_order(order: Order, registry: SampleRegistry) -> None:

@@ -155,7 +155,9 @@ def run_order_menu(
             state, OrderStatus.RESERVED, input_func, output_func, "승인할 번호: "
         )
         if selected_order is not None:
-            approve_order_console(selected_order, state.sample_registry, output_func)
+            approve_order_console(
+                selected_order, state.sample_registry, state.production_queue, output_func
+            )
 
     def do_reject() -> None:
         selected_order = _select_order_by_status(
