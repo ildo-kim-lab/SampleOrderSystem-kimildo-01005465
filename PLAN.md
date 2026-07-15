@@ -1,14 +1,15 @@
 # PLAN.md (이번 증분)
 
 ## 목표
-JSON 파일에서 시료 목록을 읽어와 `SampleRegistry`를 복원할 수 있다.
+등록된 주문 목록을 JSON 파일로 저장할 수 있다.
 
 ## 검증할 동작
-`load_samples(filepath)`는 `save_samples`가 저장한 JSON 파일을 읽어,
-동일한 필드를 가진 시료들이 등록된 `SampleRegistry`를 반환한다.
+`save_orders(order_registry, filepath)`를 호출하면, 각 주문의 필드
+(시료 ID/고객명/수량/상태)가 JSON 배열로 파일에 저장된다. 상태는 문자열
+값(예: "RESERVED")으로 저장한다.
 
 ## 근거
-- `docs/PRD.md` 5.8 데이터 영속성 — 프로그램 시작 시 저장된 파일 로드
+- `docs/PRD.md` 5.8 데이터 영속성
 
 ## 범위 외
-- 파일이 없을 때의 처리, 주문/생산 큐 로드는 다음 증분들에서 다룬다.
+- 주문 로드(복원), 생산 큐 저장/로드는 다음 증분들에서 다룬다.
