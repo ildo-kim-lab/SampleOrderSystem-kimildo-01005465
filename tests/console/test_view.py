@@ -9,3 +9,4 @@ def test_format_main_menu_lists_all_menu_items():
     assert "모니터링" in menu
     assert "출고 처리" in menu
     assert "생산 라인" in menu
+    assert "더미 데이터" in menu
