@@ -9,3 +9,15 @@ def test_new_order_has_reserved_status():
     )
 
     assert order.status == OrderStatus.RESERVED
+
+
+def test_reject_transitions_reserved_order_to_rejected():
+    order = Order(
+        sample_id="S-001",
+        customer_name="ACME Corp",
+        quantity=10,
+    )
+
+    order.reject()
+
+    assert order.status == OrderStatus.REJECTED
