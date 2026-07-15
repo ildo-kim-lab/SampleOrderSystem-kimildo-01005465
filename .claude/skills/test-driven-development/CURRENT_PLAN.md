@@ -1,22 +1,20 @@
-# CURRENT_PLAN.md (이번 증분, 순수 리팩터링)
+# CURRENT_PLAN.md (이번 증분, 버그 수정)
 
 ## 목표
-`resolve_sample_menu_choice`/`resolve_order_menu_choice`/
-`resolve_production_menu_choice`를 제거한다. `_run_menu_loop`이 각
-`_X_MENU_CHOICES` 딕셔너리를 직접 받아쓰기 때문에 이 세 resolver는
-실제 라우팅에서 전혀 호출되지 않는 죽은 코드다 (자기 자신의 테스트에서만
-호출됨).
+`create_order`에서 주문 수량 입력이 잘못됐을 때 이미 입력받은 고객명이
+조용히 버려지는 문제를 고친다. 수량을 고객명보다 먼저 검증하도록 순서를
+바꿔서, 애초에 "유효성 검증 실패 후 버려질 입력"이 생기지 않게 한다.
 
 ## 검증할 동작
-새로운 외부 동작 변화는 없다 — 세 함수와 그 전용 테스트를 제거하고,
-나머지 테스트가 계속 GREEN임을 확인한다.
+`create_order`는 이제 시료 선택 → 주문 수량 입력(검증) → 고객명 입력
+순서로 진행한다. 수량이 숫자가 아니면 고객명을 묻기 전에 실패하므로,
+사용자가 아무것도 입력하지 않은 채로 실패 메시지를 받는다.
 
 ## 근거
-- Clean Code 리뷰(2차) finding 7: 세 resolver 모두 `run_sample_menu`/
-  `run_order_menu`/`run_production_menu`에서 호출되지 않음 (grep으로
-  확인). 유지보수자가 이 함수들을 실제 라우팅 지점으로 오인하고 고쳐도
-  아무 효과가 없다.
+- Clean Code 리뷰(2차) finding 8: 기존에는 고객명을 먼저 입력받고 나서
+  수량 검증에 실패하면 그 고객명이 아무 안내 없이 버려졌다.
 
 ## 범위 외
-- `resolve_main_menu_choice`는 `run_app`에서 실제로 호출되므로 그대로
-  유지한다.
+- 이 순서 변경으로 `create_order`를 구동하는 기존 테스트들의 입력
+  시퀀스도 이번 증분에서 함께 맞춘다 (원인과 해결책이 하나로 묶여 있어
+  분리하지 않는다).

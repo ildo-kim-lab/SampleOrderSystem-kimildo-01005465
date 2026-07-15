@@ -1,3 +1,5 @@
+import pytest
+
 from sample_order_system.console.order_controller import (
     approve_order_console,
     create_order,
@@ -95,7 +97,7 @@ def test_create_order_reports_friendly_message_on_out_of_range_sample_index():
 def test_create_order_reports_friendly_message_on_non_numeric_quantity():
     order_registry = OrderRegistry()
     sample_registry = _sample_registry_with_one_sample()
-    inputs = iter(["1", "ACME Corp", "abc"])
+    inputs = iter(["1", "abc"])
     outputs = []
 
     create_order(
@@ -107,6 +109,26 @@ def test_create_order_reports_friendly_message_on_non_numeric_quantity():
 
     assert any("숫자" in message for message in outputs)
     assert order_registry.get_all() == []
+
+
+def test_create_order_does_not_prompt_for_customer_name_when_quantity_invalid():
+    order_registry = OrderRegistry()
+    sample_registry = _sample_registry_with_one_sample()
+    # 시료 선택("1") 다음 수량이 잘못되면("abc"), 고객명 입력을 요구하지
+    # 않고 실패해야 한다 - 두 번째 입력 이후 더 이상 input_func가 호출되지
+    # 않는지 확인한다 (호출되면 StopIteration으로 실패).
+    inputs = iter(["1", "abc"])
+    outputs = []
+
+    create_order(
+        order_registry,
+        sample_registry,
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    with pytest.raises(StopIteration):
+        next(inputs)
 
 
 def test_approve_order_console_confirms_when_stock_is_sufficient():
