@@ -26,12 +26,19 @@ class Order:
                 f"종료 상태({self.status.value})에서는 {action_label}할 수 없습니다"
             )
 
+    def _check_status_is(self, expected: OrderStatus, action_label: str) -> None:
+        if self.status != expected:
+            raise ValueError(
+                f"{self.status.value} 상태에서는 {action_label}할 수 없습니다 "
+                f"({expected.value} 상태에서만 가능)"
+            )
+
     def reject(self) -> None:
         self._check_not_terminal("거절")
         self.status = OrderStatus.REJECTED
 
     def approve(self, available_stock: int) -> None:
-        self._check_not_terminal("승인")
+        self._check_status_is(OrderStatus.RESERVED, "승인")
         if available_stock >= self.quantity:
             self.status = OrderStatus.CONFIRMED
         else:
