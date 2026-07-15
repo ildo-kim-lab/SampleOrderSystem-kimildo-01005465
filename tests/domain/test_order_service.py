@@ -59,6 +59,7 @@ def test_complete_order_production_increases_stock_by_actual_production_quantity
         )
     )
     order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    order.status = OrderStatus.PRODUCING
 
     complete_order_production(order, registry)
 

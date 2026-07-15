@@ -49,5 +49,5 @@ class Order:
         self.status = OrderStatus.RELEASED
 
     def complete_production(self) -> None:
-        self._check_not_terminal("생산 완료 처리")
+        self._check_status_is(OrderStatus.PRODUCING, "생산 완료 처리")
         self.status = OrderStatus.CONFIRMED

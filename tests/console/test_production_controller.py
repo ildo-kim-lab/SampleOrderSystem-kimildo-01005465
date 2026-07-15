@@ -21,6 +21,7 @@ def test_complete_production_console_confirms_and_increases_stock():
         )
     )
     order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    order.status = OrderStatus.PRODUCING
     outputs = []
 
     complete_production_console(order, sample_registry, output_func=outputs.append)
