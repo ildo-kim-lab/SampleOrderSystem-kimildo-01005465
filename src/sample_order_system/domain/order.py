@@ -28,3 +28,6 @@ class Order:
 
     def release(self) -> None:
         self.status = OrderStatus.RELEASED
+
+    def complete_production(self) -> None:
+        self.status = OrderStatus.CONFIRMED
