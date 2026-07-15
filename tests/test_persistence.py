@@ -2,11 +2,13 @@ import json
 
 from sample_order_system.domain.order import Order, OrderStatus
 from sample_order_system.domain.order_registry import OrderRegistry
+from sample_order_system.domain.production_queue import ProductionQueue
 from sample_order_system.domain.sample import Sample, SampleRegistry
 from sample_order_system.persistence import (
     load_orders,
     load_samples,
     save_orders,
+    save_production_queue,
     save_samples,
 )
 
@@ -98,3 +100,32 @@ def test_load_orders_restores_registry_with_status(tmp_path):
     assert orders[0].customer_name == "ACME Corp"
     assert orders[0].quantity == 10
     assert orders[0].status == OrderStatus.CONFIRMED
+
+
+def test_save_production_queue_writes_json_file_in_fifo_order(tmp_path):
+    queue = ProductionQueue()
+    first_order = Order(sample_id="S-001", customer_name="A", quantity=5)
+    first_order.status = OrderStatus.PRODUCING
+    second_order = Order(sample_id="S-002", customer_name="B", quantity=3)
+    second_order.status = OrderStatus.PRODUCING
+    queue.enqueue(first_order)
+    queue.enqueue(second_order)
+    filepath = tmp_path / "queue.json"
+
+    save_production_queue(queue, filepath)
+
+    saved = json.loads(filepath.read_text(encoding="utf-8"))
+    assert saved == [
+        {
+            "sample_id": "S-001",
+            "customer_name": "A",
+            "quantity": 5,
+            "status": "PRODUCING",
+        },
+        {
+            "sample_id": "S-002",
+            "customer_name": "B",
+            "quantity": 3,
+            "status": "PRODUCING",
+        },
+    ]

@@ -1,16 +1,14 @@
 # PLAN.md (이번 증분)
 
 ## 목표
-`python -m sample_order_system`으로 실제 콘솔 프로그램을 실행할 수 있다
-(실제 `input()`/`print()`와 고정 저장 파일 경로를 사용).
+생산 큐(ProductionQueue)에 대기 중인 주문들을 JSON 파일로 저장할 수 있다.
 
 ## 검증할 동작
-`main()` 함수는 실제 `input`/`print`를 `start_app`에 연결해서 호출한다.
-단위 테스트에서는 `input`/`print`를 대체(monkeypatch)해서 `main()`이
-`start_app`을 올바른 인자로 호출하는지 확인한다.
+`save_production_queue(queue, filepath)`를 호출하면, 큐에 있는 각 주문의
+필드(시료 ID/고객명/수량/상태)가 FIFO 순서 그대로 JSON 배열로 저장된다.
 
 ## 근거
-- `docs/PRD.md` 1. 배경 및 목적 — 콘솔 기반으로 동작
+- `docs/PRD.md` 5.8 데이터 영속성 — 생산 큐 데이터도 저장 대상
 
 ## 범위 외
-- 저장 파일 경로를 사용자가 지정하는 옵션(커맨드라인 인자 등)은 다루지 않는다.
+- 생산 큐 로드(복원), `run_app`과의 실제 연동은 다음 증분들에서 다룬다.
