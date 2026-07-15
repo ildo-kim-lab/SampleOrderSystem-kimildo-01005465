@@ -45,3 +45,16 @@ def test_approve_starts_production_when_stock_is_insufficient():
     order.approve(available_stock=9)
 
     assert order.status == OrderStatus.PRODUCING
+
+
+def test_release_transitions_confirmed_order_to_released():
+    order = Order(
+        sample_id="S-001",
+        customer_name="ACME Corp",
+        quantity=10,
+    )
+    order.approve(available_stock=10)
+
+    order.release()
+
+    assert order.status == OrderStatus.RELEASED
