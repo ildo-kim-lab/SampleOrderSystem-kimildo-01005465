@@ -1,20 +1,22 @@
 # CURRENT_PLAN.md (이번 증분)
 
-## 목표 (버그 수정)
-주문 승인/거절/출고 처리에서 번호 입력란에 숫자가 아닌 값을 넣으면
-크래시하는 문제를 고친다. `_select_order_by_status`의
-`int(input_func(prompt))` 파싱에 예외 처리가 빠져 있었다.
+## 목표 (기능 누락 수정)
+주문 승인 시 재고가 부족해 PRODUCING으로 전환되면, 해당 주문이 실제로
+생산 큐(ProductionQueue)에 등록되도록 한다.
 
 ## 검증할 동작
-`_select_order_by_status`를 호출한 상태에서 번호 입력으로 숫자가 아닌
-문자열("abc")을 주면, `ValueError`가 그대로 튀어나오지 않고 "숫자 형식이
-올바르지 않습니다" 같은 안내 메시지가 출력되며 `None`을 반환한다.
+`approve_order(order, sample_registry, production_queue)`를 재고가
+부족한 상황에서 호출하면, `order.status`가 `PRODUCING`이 되고 동시에
+`production_queue`에 그 주문이 들어간다 (`production_queue.dequeue()`로
+꺼내면 같은 주문 객체가 나온다).
 
 ## 근거
-- 사용자가 직접 실행해보고 발견한 크래시 버그: 승인할 번호에 "abc"를
-  입력하면 `ValueError: invalid literal for int()`가 그대로 튀어나와
-  프로그램이 죽음. `register_sample`/`create_order`의 숫자 입력값은 이미
-  같은 방식으로 보호돼 있었는데, 이 함수만 빠져 있었다.
+- `docs/PRD.md` 5.4 주문 승인/거절 — "재고가 부족한 경우: 생산 라인에
+  자동으로 등록, 주문 상태를 PRODUCING으로 전환"
+- 점검 중 발견한 기능 누락: `order_service.approve_order`는 상태만
+  PRODUCING으로 바꿀 뿐 `ProductionQueue.enqueue()`를 호출하지 않아서,
+  "생산 라인" 메뉴의 "대기 주문 확인"이 실제 플레이에서 항상 비어 있었다.
 
 ## 범위 외
-- 없음.
+- 생산 완료 처리를 실행할 메뉴가 없는 문제(발견 목록 4번)는 이어지는
+  별도 증분에서 다룬다. 이번 증분은 "큐에 등록되는 것"까지만 다룬다.
