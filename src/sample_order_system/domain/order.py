@@ -45,7 +45,7 @@ class Order:
             self.status = OrderStatus.PRODUCING
 
     def release(self) -> None:
-        self._check_not_terminal("출고")
+        self._check_status_is(OrderStatus.CONFIRMED, "출고")
         self.status = OrderStatus.RELEASED
 
     def complete_production(self) -> None:

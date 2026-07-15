@@ -39,6 +39,7 @@ def test_release_order_decreases_stock_by_order_quantity():
         )
     )
     order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    order.status = OrderStatus.CONFIRMED
 
     release_order(order, registry)
 

@@ -15,6 +15,7 @@ def test_release_order_console_releases_and_decreases_stock():
         )
     )
     order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    order.status = OrderStatus.CONFIRMED
     outputs = []
 
     release_order_console(order, sample_registry, output_func=outputs.append)
