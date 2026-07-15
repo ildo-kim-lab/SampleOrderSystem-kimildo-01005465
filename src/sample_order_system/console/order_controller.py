@@ -2,6 +2,8 @@ from typing import Callable
 
 from sample_order_system.domain.order import Order
 from sample_order_system.domain.order_registry import OrderRegistry
+from sample_order_system.domain.order_service import approve_order
+from sample_order_system.domain.sample import SampleRegistry
 
 
 def create_order(
@@ -20,3 +22,12 @@ def create_order(
     )
     order_registry.register(order)
     output_func(f"주문 접수 완료 ({customer_name}, {sample_id} x {quantity})")
+
+
+def approve_order_console(
+    order: Order,
+    sample_registry: SampleRegistry,
+    output_func: Callable[[str], None],
+) -> None:
+    approve_order(order, sample_registry)
+    output_func(f"주문 승인 처리됨 -> {order.status.value}")
