@@ -32,3 +32,20 @@ def test_run_order_menu_approve_with_out_of_range_index_does_not_crash():
     )
 
     assert any("잘못된 번호" in message for message in outputs)
+
+
+def test_run_order_menu_approve_with_non_numeric_index_does_not_crash():
+    state = AppState()
+    state.order_registry.register(
+        Order(sample_id="S-001", customer_name="A", quantity=1)
+    )
+    inputs = iter(["2", "abc", "0"])
+    outputs = []
+
+    run_order_menu(
+        state,
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    assert any("숫자" in message for message in outputs)
