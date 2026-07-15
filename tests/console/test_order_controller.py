@@ -27,6 +27,21 @@ def test_create_order_adds_reserved_order_with_entered_values():
     assert orders[0].status == OrderStatus.RESERVED
 
 
+def test_create_order_reports_friendly_message_on_non_numeric_quantity():
+    order_registry = OrderRegistry()
+    inputs = iter(["S-001", "ACME Corp", "abc"])
+    outputs = []
+
+    create_order(
+        order_registry,
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    assert any("숫자" in message for message in outputs)
+    assert order_registry.get_all() == []
+
+
 def test_approve_order_console_confirms_when_stock_is_sufficient():
     sample_registry = SampleRegistry()
     sample_registry.register(
