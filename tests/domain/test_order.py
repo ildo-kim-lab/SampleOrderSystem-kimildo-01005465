@@ -33,3 +33,15 @@ def test_approve_confirms_order_when_stock_is_sufficient():
     order.approve(available_stock=10)
 
     assert order.status == OrderStatus.CONFIRMED
+
+
+def test_approve_starts_production_when_stock_is_insufficient():
+    order = Order(
+        sample_id="S-001",
+        customer_name="ACME Corp",
+        quantity=10,
+    )
+
+    order.approve(available_stock=9)
+
+    assert order.status == OrderStatus.PRODUCING
