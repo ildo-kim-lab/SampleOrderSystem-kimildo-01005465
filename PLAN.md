@@ -1,17 +1,17 @@
 # PLAN.md (이번 증분)
 
 ## 목표
-생산이 완료되면, 주문 수량과 현재 재고의 부족분을 수율로 나눈 실 생산량만큼
-재고가 증가하고, 주문 상태는 CONFIRMED로 전환된다.
+메인 메뉴에 표시할 텍스트를 생성할 수 있다 (입력 처리와 분리된 순수 렌더링 함수).
 
 ## 검증할 동작
-`complete_order_production(order, registry)`를 호출하면 `order.status`가
-`CONFIRMED`가 되고, `sample.stock`이 `ceil((order.quantity - 기존 stock) / yield_rate)`
-만큼 늘어난다.
+`format_main_menu()`는 PRD의 5개 메뉴 항목(시료관리, 주문, 모니터링, 출고 처리,
+생산 라인)을 모두 포함한 문자열을 반환한다.
 
 ## 근거
-- `docs/PRD.md` 5.6 생산 라인 — 실 생산량: ceil(부족분/수율), 생산 완료 시
-  PRODUCING → CONFIRMED
+- `docs/PRD.md` 5.1 메인 메뉴 — 하위 메뉴: 시료관리 / 주문(접수·승인·거절) /
+  모니터링 / 출고 처리 / 생산 라인
+- `CLAUDE.md` 아키텍처 원칙 — 콘솔 I/O(출력)와 로직을 분리하기 위해, 렌더링은
+  `input()`을 전혀 사용하지 않는 순수 함수로 만든다.
 
 ## 범위 외
-- 생산 큐(ProductionQueue) 연동, 생산 시간 추적/현황 표기는 다음 증분에서 다룬다.
+- 실제 사용자 입력 처리(`input()` 호출), 하위 메뉴 라우팅은 다음 증분에서 다룬다.
