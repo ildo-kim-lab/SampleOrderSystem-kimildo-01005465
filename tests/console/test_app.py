@@ -7,6 +7,7 @@ from sample_order_system.console.app import (
     run_app,
 )
 from sample_order_system.console.state import AppState
+from sample_order_system.domain.order import Order
 
 
 @pytest.mark.parametrize(
@@ -95,6 +96,23 @@ def test_run_app_routes_order_menu_choice_to_creation():
     orders = state.order_registry.get_all()
     assert len(orders) == 1
     assert orders[0].sample_id == "S-001"
+
+
+def test_run_app_routes_monitoring_menu_choice():
+    state = AppState()
+    order = Order(sample_id="S-001", customer_name="A", quantity=1)
+    state.order_registry.register(order)
+    inputs = iter(["3", "0"])
+    outputs = []
+
+    run_app(
+        state,
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    combined_output = "\n".join(outputs)
+    assert "RESERVED: 1" in combined_output
 
 
 @pytest.mark.parametrize(
