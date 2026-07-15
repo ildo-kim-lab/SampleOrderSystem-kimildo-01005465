@@ -20,12 +20,6 @@ class Order:
     quantity: int
     status: OrderStatus = field(default=OrderStatus.RESERVED)
 
-    def _check_not_terminal(self, action_label: str) -> None:
-        if self.status in _TERMINAL_STATUSES:
-            raise ValueError(
-                f"종료 상태({self.status.value})에서는 {action_label}할 수 없습니다"
-            )
-
     def _check_status_is(self, expected: OrderStatus, action_label: str) -> None:
         if self.status != expected:
             raise ValueError(
@@ -34,7 +28,7 @@ class Order:
             )
 
     def reject(self) -> None:
-        self._check_not_terminal("거절")
+        self._check_status_is(OrderStatus.RESERVED, "거절")
         self.status = OrderStatus.REJECTED
 
     def approve(self, available_stock: int) -> None:
