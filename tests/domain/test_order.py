@@ -106,3 +106,11 @@ def test_release_raises_when_order_already_rejected():
 
     with pytest.raises(ValueError):
         order.release()
+
+
+def test_complete_production_raises_when_order_already_rejected():
+    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    order.reject()
+
+    with pytest.raises(ValueError):
+        order.complete_production()
