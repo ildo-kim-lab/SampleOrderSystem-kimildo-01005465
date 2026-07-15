@@ -35,7 +35,7 @@ from sample_order_system.console.dummy_data import (
 from sample_order_system.console.release_controller import release_order_console
 from sample_order_system.console.state import AppState
 from sample_order_system.console.view import format_main_menu, format_order_line
-from sample_order_system.domain.order import OrderStatus
+from sample_order_system.domain.order import Order, OrderStatus
 
 _MAIN_MENU_CHOICES = {
     "1": "시료관리",
@@ -80,7 +80,7 @@ def _select_order_by_status(
     input_func: Callable[[str], str],
     output_func: Callable[[str], None],
     prompt: str,
-):
+) -> Order | None:
     matching_orders = [
         order for order in state.order_registry.get_all() if order.status == status
     ]
