@@ -27,5 +27,8 @@ def run_app(
         if choice == "0":
             output_func("프로그램을 종료합니다")
             return
-        if resolve_main_menu_choice(choice) is None:
+        menu_name = resolve_main_menu_choice(choice)
+        if menu_name is None:
             output_func("잘못된 선택입니다")
+            continue
+        output_func(f"[{menu_name}]")
