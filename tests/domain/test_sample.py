@@ -53,3 +53,16 @@ def test_increase_stock_adds_given_quantity():
     sample.increase_stock(12)
 
     assert sample.stock == 62
+
+
+def test_find_by_id_returns_registered_sample():
+    registry = SampleRegistry()
+    sample = Sample(
+        sample_id="S-001",
+        name="Wafer-A",
+        avg_production_time=2.5,
+        yield_rate=0.9,
+    )
+    registry.register(sample)
+
+    assert registry.find_by_id("S-001") is sample
