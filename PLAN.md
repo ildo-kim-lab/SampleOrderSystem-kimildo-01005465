@@ -1,15 +1,15 @@
 # PLAN.md (이번 증분)
 
 ## 목표
-JSON 파일에서 생산 큐 데이터를 읽어와 `ProductionQueue`를 FIFO 순서 그대로
-복원할 수 있다.
+프로그램 종료/시작 시 생산 큐도 시료/주문과 함께 저장·복원된다.
 
 ## 검증할 동작
-`load_production_queue(filepath)`는 `save_production_queue`가 저장한 JSON
-파일을 읽어, 동일한 순서로 주문이 채워진 `ProductionQueue`를 반환한다.
+`run_app`에 `queue_filepath`를 주면 종료 시 생산 큐가 저장되고,
+`start_app`에 `queue_filepath`를 주면 시작 시 생산 큐가 복원된다.
 
 ## 근거
-- `docs/PRD.md` 5.8 데이터 영속성
+- `docs/PRD.md` 5.8 데이터 영속성 — 생산 큐 포함 전체 저장/복원
 
 ## 범위 외
-- `run_app`/`start_app`과의 실제 연동은 다음 증분에서 다룬다.
+- 이 증분으로 Phase 4(Data Persist)의 핵심 저장/복원 대상(시료/주문/생산 큐)이
+  모두 연결된다.
