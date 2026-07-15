@@ -19,6 +19,15 @@ def test_generate_dummy_samples_creates_varied_stock_levels():
     assert len(set(stocks)) > 1
 
 
+def test_generate_dummy_samples_is_idempotent_when_called_twice():
+    registry = SampleRegistry()
+    generate_dummy_samples(registry)
+
+    generate_dummy_samples(registry)
+
+    assert len(registry.get_all()) == 3
+
+
 def test_generate_dummy_orders_covers_all_five_statuses():
     registry = OrderRegistry()
 
