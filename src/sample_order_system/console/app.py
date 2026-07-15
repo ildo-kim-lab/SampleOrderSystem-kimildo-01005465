@@ -97,3 +97,5 @@ def run_app(
         output_func(f"[{menu_name}]")
         if menu_name == "시료관리":
             run_sample_menu(state, input_func, output_func)
+        elif menu_name == "주문":
+            run_order_menu(state, input_func, output_func)
