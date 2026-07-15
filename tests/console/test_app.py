@@ -2,6 +2,7 @@ import pytest
 
 from sample_order_system.console.app import (
     resolve_main_menu_choice,
+    resolve_order_menu_choice,
     resolve_sample_menu_choice,
     run_app,
 )
@@ -92,3 +93,17 @@ def test_run_app_routes_sample_menu_choice_to_registration():
 )
 def test_resolve_sample_menu_choice(choice, expected):
     assert resolve_sample_menu_choice(choice) == expected
+
+
+@pytest.mark.parametrize(
+    "choice,expected",
+    [
+        ("1", "접수"),
+        ("2", "승인"),
+        ("3", "거절"),
+        ("0", "뒤로가기"),
+        ("9", None),
+    ],
+)
+def test_resolve_order_menu_choice(choice, expected):
+    assert resolve_order_menu_choice(choice) == expected
