@@ -61,5 +61,7 @@ def generate_dummy_orders(order_registry: OrderRegistry) -> None:
             status=OrderStatus.RELEASED,
         ),
     ]
+    existing_customer_names = {o.customer_name for o in order_registry.get_all()}
     for order in orders:
-        order_registry.register(order)
+        if order.customer_name not in existing_customer_names:
+            order_registry.register(order)
