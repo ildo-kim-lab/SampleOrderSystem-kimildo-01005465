@@ -28,6 +28,17 @@ def resolve_sample_menu_choice(choice: str) -> str | None:
     return _SAMPLE_MENU_CHOICES.get(choice)
 
 
+def run_sample_menu(
+    state: AppState,
+    input_func: Callable[[str], str],
+    output_func: Callable[[str], None],
+) -> None:
+    choice = input_func("선택: ")
+    action = resolve_sample_menu_choice(choice)
+    if action == "뒤로가기":
+        return
+
+
 def run_app(
     state: AppState,
     input_func: Callable[[str], str],
