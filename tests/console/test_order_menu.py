@@ -61,3 +61,19 @@ def test_run_order_menu_approves_selected_reserved_order():
     )
 
     assert order.status == OrderStatus.CONFIRMED
+
+
+def test_run_order_menu_rejects_selected_reserved_order():
+    state = AppState()
+    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    state.order_registry.register(order)
+    inputs = iter(["3", "1", "0"])
+    outputs = []
+
+    run_order_menu(
+        state,
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    assert order.status == OrderStatus.REJECTED
