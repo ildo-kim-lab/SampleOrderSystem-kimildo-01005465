@@ -98,23 +98,41 @@ def _select_order_by_status(
     return matching_orders[index_choice - 1]
 
 
+def _run_menu_loop(
+    input_func: Callable[[str], str],
+    output_func: Callable[[str], None],
+    choices: dict[str, str],
+    handlers: dict[str, Callable[[], None]],
+) -> None:
+    while True:
+        choice = input_func("선택: ")
+        action = choices.get(choice)
+        if action == "뒤로가기":
+            return
+        handler = handlers.get(action)
+        if handler is not None:
+            handler()
+
+
 def run_sample_menu(
     state: AppState,
     input_func: Callable[[str], str],
     output_func: Callable[[str], None],
 ) -> None:
-    while True:
-        choice = input_func("선택: ")
-        action = resolve_sample_menu_choice(choice)
-        if action == "뒤로가기":
-            return
-        if action == "등록":
-            register_sample(state.sample_registry, input_func, output_func)
-        elif action == "조회":
-            list_samples(state.sample_registry, output_func)
-        elif action == "검색":
-            keyword = input_func("검색어: ")
-            search_samples(state.sample_registry, keyword, output_func)
+    def do_search() -> None:
+        keyword = input_func("검색어: ")
+        search_samples(state.sample_registry, keyword, output_func)
+
+    _run_menu_loop(
+        input_func,
+        output_func,
+        _SAMPLE_MENU_CHOICES,
+        {
+            "등록": lambda: register_sample(state.sample_registry, input_func, output_func),
+            "조회": lambda: list_samples(state.sample_registry, output_func),
+            "검색": do_search,
+        },
+    )
 
 
 def run_order_menu(
@@ -122,25 +140,30 @@ def run_order_menu(
     input_func: Callable[[str], str],
     output_func: Callable[[str], None],
 ) -> None:
-    while True:
-        choice = input_func("선택: ")
-        action = resolve_order_menu_choice(choice)
-        if action == "뒤로가기":
-            return
-        if action == "접수":
-            create_order(state.order_registry, input_func, output_func)
-        elif action == "승인":
-            selected_order = _select_order_by_status(
-                state, OrderStatus.RESERVED, input_func, output_func, "승인할 번호: "
-            )
-            if selected_order is not None:
-                approve_order_console(selected_order, state.sample_registry, output_func)
-        elif action == "거절":
-            selected_order = _select_order_by_status(
-                state, OrderStatus.RESERVED, input_func, output_func, "거절할 번호: "
-            )
-            if selected_order is not None:
-                reject_order_console(selected_order, output_func)
+    def do_approve() -> None:
+        selected_order = _select_order_by_status(
+            state, OrderStatus.RESERVED, input_func, output_func, "승인할 번호: "
+        )
+        if selected_order is not None:
+            approve_order_console(selected_order, state.sample_registry, output_func)
+
+    def do_reject() -> None:
+        selected_order = _select_order_by_status(
+            state, OrderStatus.RESERVED, input_func, output_func, "거절할 번호: "
+        )
+        if selected_order is not None:
+            reject_order_console(selected_order, output_func)
+
+    _run_menu_loop(
+        input_func,
+        output_func,
+        _ORDER_MENU_CHOICES,
+        {
+            "접수": lambda: create_order(state.order_registry, input_func, output_func),
+            "승인": do_approve,
+            "거절": do_reject,
+        },
+    )
 
 
 def run_app(
@@ -151,6 +174,29 @@ def run_app(
     order_filepath: Path | None = None,
     queue_filepath: Path | None = None,
 ) -> None:
+    def do_monitoring() -> None:
+        monitor_order_counts(state.order_registry, output_func)
+        monitor_stock_levels(state.sample_registry, state.order_registry, output_func)
+
+    def do_release() -> None:
+        selected_order = _select_order_by_status(
+            state, OrderStatus.CONFIRMED, input_func, output_func, "출고할 번호: "
+        )
+        if selected_order is not None:
+            release_order_console(selected_order, state.sample_registry, output_func)
+
+    def do_production_line() -> None:
+        show_production_status(state.production_line, output_func)
+        list_waiting_orders(state.production_queue, output_func)
+
+    handlers: dict[str, Callable[[], None]] = {
+        "시료관리": lambda: run_sample_menu(state, input_func, output_func),
+        "주문": lambda: run_order_menu(state, input_func, output_func),
+        "모니터링": do_monitoring,
+        "출고 처리": do_release,
+        "생산 라인": do_production_line,
+    }
+
     while True:
         output_func(format_main_menu())
         choice = input_func("선택: ")
@@ -173,22 +219,7 @@ def run_app(
             output_func("잘못된 선택입니다")
             continue
         output_func(f"[{menu_name}]")
-        if menu_name == "시료관리":
-            run_sample_menu(state, input_func, output_func)
-        elif menu_name == "주문":
-            run_order_menu(state, input_func, output_func)
-        elif menu_name == "모니터링":
-            monitor_order_counts(state.order_registry, output_func)
-            monitor_stock_levels(state.sample_registry, state.order_registry, output_func)
-        elif menu_name == "출고 처리":
-            selected_order = _select_order_by_status(
-                state, OrderStatus.CONFIRMED, input_func, output_func, "출고할 번호: "
-            )
-            if selected_order is not None:
-                release_order_console(selected_order, state.sample_registry, output_func)
-        elif menu_name == "생산 라인":
-            show_production_status(state.production_line, output_func)
-            list_waiting_orders(state.production_queue, output_func)
+        handlers[menu_name]()
 
 
 def start_app(

@@ -1,21 +1,22 @@
 # CURRENT_PLAN.md (이번 증분)
 
 ## 목표 (CleanCode, 순수 리팩터링)
-`persistence._dict_to_order`와 `console/dummy_data.generate_dummy_orders`가
-`order.status = X`로 생성 후 상태 필드를 직접 대입하던 것을, `Order(...,
-status=X)` 생성자 인자로 바꾼다. (Clean Code 리뷰 finding 2)
+`console/app.py`의 메뉴 라우팅 3곳(run_sample_menu, run_order_menu,
+run_app)이 각자 반복하던 "선택 → resolve → if/elif 분기" 패턴을, 공용
+서브메뉴 루프 헬퍼(`_run_menu_loop`)와 액션→핸들러 딕셔너리로 통일한다.
+(Clean Code 리뷰 finding 3)
 
 ## 검증할 동작
-새로운 외부 동작 변화는 없다 — 기존 테스트(`test_load_orders_restores_...`,
-`test_generate_dummy_orders_covers_all_five_statuses` 등)가 리팩터링 전후
-모두 그대로 통과해야 한다. Order는 이미 `status` 필드를 생성자 인자로
-받으므로 별도 메서드 추가 없이 대입 방식만 바꾼다.
+새로운 외부 동작 변화는 없다 — 기존 콘솔 라우팅 테스트
+(`tests/console/test_app.py`, `test_sample_menu.py`, `test_order_menu.py`,
+`test_order_menu_empty_selection.py` 등)가 리팩터링 전후 모두 그대로
+통과해야 한다.
 
 ## 근거
-- `CLAUDE.md`: "주문 상태 전이는 반드시 하나의 함수/클래스(상태 머신)를
-  통해서만 이루어져야 한다." 생성 이후 상태 필드를 직접 덮어쓰는 대신,
-  생성 시점에 상태를 지정하는 방식으로 전이 메서드 우회를 없앤다.
+- Clean Code 리뷰 finding 3: 세 곳이 독립적으로 choices-dict + resolver +
+  if/elif를 반복 구현하고 있어, 메뉴 항목 추가/변경 시 세 곳을 모두
+  고쳐야 하는 유지보수 비용이 있었다.
 
 ## 범위 외
-- 없음 (이 증분으로 finding 2가 마무리된다). 순수 리팩터링이므로 RED 단계
+- 없음 (이 증분으로 finding 3이 마무리된다). 순수 리팩터링이므로 RED 단계
   없이 진행하고, 리팩터링 전후 테스트가 계속 GREEN임을 확인한다.
