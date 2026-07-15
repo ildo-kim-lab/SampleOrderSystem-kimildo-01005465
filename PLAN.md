@@ -1,16 +1,18 @@
 # PLAN.md (이번 증분)
 
 ## 목표
-접수된 주문들을 저장하고 전체 목록을 조회할 수 있다 (콘솔 주문 접수 기능의
-전제 조건).
+콘솔에서 주문 접수 메뉴를 통해, 사용자가 입력한 값(시료 ID/고객명/주문 수량)으로
+새 주문(RESERVED 상태)을 `OrderRegistry`에 등록할 수 있다.
 
 ## 검증할 동작
-`OrderRegistry.register()`로 주문을 등록하면 `OrderRegistry.get_all()` 목록에
-그 주문이 포함된다.
+`create_order(order_registry, input_func, output_func)`를 호출하면,
+`input_func`가 반환한 값들로 만들어진 `RESERVED` 상태의 주문이
+`order_registry`에 등록된다.
 
 ## 근거
-- `docs/PRD.md` 5.3 시료 주문 (예약), 5.4 주문 승인/거절 — 접수된 주문 목록을
-  다루려면 주문을 저장/조회할 저장소가 필요하다.
+- `docs/PRD.md` 5.3 시료 주문 (예약) — 입력값: 시료 ID, 고객명, 주문 수량,
+  생성 시 상태는 RESERVED
 
 ## 범위 외
-- 콘솔에서 실제 입력을 받아 주문을 생성하는 기능은 다음 증분에서 다룬다.
+- 메인 메뉴와의 실제 라우팅 연결, 존재하지 않는 시료 ID에 대한 검증은
+  다음 증분에서 다룬다.
