@@ -1,14 +1,14 @@
 # PLAN.md (이번 증분)
 
 ## 목표
-생산 라인이 실 생산량에 대해 소요될 총 생산 시간을 계산할 수 있다.
+생산 라인에서 생산이 완료되면, PRODUCING 상태의 주문이 CONFIRMED로 전환된다.
 
 ## 검증할 동작
-`calculate_total_production_time(avg_production_time, production_quantity)`는
-`avg_production_time * production_quantity` 값을 반환한다.
+`Order.complete_production()`을 호출하면 상태가 `OrderStatus.CONFIRMED`가 된다.
 
 ## 근거
-- `docs/PRD.md` 5.6 생산 라인 — 총 생산 시간: 평균 생산 시간 * 실 생산량
+- `docs/PRD.md` 5.6 생산 라인 — 생산 완료 시 해당 주문 상태 PRODUCING → CONFIRMED
 
 ## 범위 외
-- 생산 큐(FIFO), 생산 완료 시 상태 전이는 다음 증분에서 다룬다.
+- 생산 큐(FIFO), 생산 라인이 실제로 생산량/시간을 추적하며 진행 상태를
+  보여주는 로직은 다음 증분에서 다룬다.

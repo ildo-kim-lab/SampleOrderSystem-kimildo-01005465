@@ -58,3 +58,16 @@ def test_release_transitions_confirmed_order_to_released():
     order.release()
 
     assert order.status == OrderStatus.RELEASED
+
+
+def test_complete_production_transitions_producing_order_to_confirmed():
+    order = Order(
+        sample_id="S-001",
+        customer_name="ACME Corp",
+        quantity=10,
+    )
+    order.approve(available_stock=9)
+
+    order.complete_production()
+
+    assert order.status == OrderStatus.CONFIRMED
