@@ -5,6 +5,10 @@ from sample_order_system.console.controller import (
     register_sample,
     search_samples,
 )
+from sample_order_system.console.monitoring_controller import (
+    monitor_order_counts,
+    monitor_stock_levels,
+)
 from sample_order_system.console.order_controller import (
     approve_order_console,
     create_order,
@@ -133,3 +137,6 @@ def run_app(
             run_sample_menu(state, input_func, output_func)
         elif menu_name == "주문":
             run_order_menu(state, input_func, output_func)
+        elif menu_name == "모니터링":
+            monitor_order_counts(state.order_registry, output_func)
+            monitor_stock_levels(state.sample_registry, state.order_registry, output_func)
