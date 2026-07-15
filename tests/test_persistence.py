@@ -1,9 +1,14 @@
 import json
 
-from sample_order_system.domain.order import Order
+from sample_order_system.domain.order import Order, OrderStatus
 from sample_order_system.domain.order_registry import OrderRegistry
 from sample_order_system.domain.sample import Sample, SampleRegistry
-from sample_order_system.persistence import load_samples, save_orders, save_samples
+from sample_order_system.persistence import (
+    load_orders,
+    load_samples,
+    save_orders,
+    save_samples,
+)
 
 
 def test_save_samples_writes_json_file(tmp_path):
@@ -75,3 +80,21 @@ def test_save_orders_writes_json_file(tmp_path):
             "status": "RESERVED",
         }
     ]
+
+
+def test_load_orders_restores_registry_with_status(tmp_path):
+    original = OrderRegistry()
+    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    order.status = OrderStatus.CONFIRMED
+    original.register(order)
+    filepath = tmp_path / "orders.json"
+    save_orders(original, filepath)
+
+    restored = load_orders(filepath)
+
+    orders = restored.get_all()
+    assert len(orders) == 1
+    assert orders[0].sample_id == "S-001"
+    assert orders[0].customer_name == "ACME Corp"
+    assert orders[0].quantity == 10
+    assert orders[0].status == OrderStatus.CONFIRMED

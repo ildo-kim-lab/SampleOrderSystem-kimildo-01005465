@@ -1,15 +1,16 @@
 # PLAN.md (이번 증분)
 
 ## 목표
-등록된 주문 목록을 JSON 파일로 저장할 수 있다.
+JSON 파일에서 주문 목록을 읽어와 `OrderRegistry`를 복원할 수 있다
+(상태 문자열을 `OrderStatus`로 복원).
 
 ## 검증할 동작
-`save_orders(order_registry, filepath)`를 호출하면, 각 주문의 필드
-(시료 ID/고객명/수량/상태)가 JSON 배열로 파일에 저장된다. 상태는 문자열
-값(예: "RESERVED")으로 저장한다.
+`load_orders(filepath)`는 `save_orders`가 저장한 JSON 파일을 읽어, 동일한
+필드와 상태를 가진 주문들이 등록된 `OrderRegistry`를 반환한다.
 
 ## 근거
 - `docs/PRD.md` 5.8 데이터 영속성
 
 ## 범위 외
-- 주문 로드(복원), 생산 큐 저장/로드는 다음 증분들에서 다룬다.
+- 파일이 없을 때의 처리, 프로그램 시작/종료 시점과의 실제 연동은 다음
+  증분들에서 다룬다.
