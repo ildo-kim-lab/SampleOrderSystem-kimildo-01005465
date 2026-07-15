@@ -129,3 +129,10 @@ def test_release_raises_when_order_still_reserved():
 
     with pytest.raises(ValueError):
         order.release()
+
+
+def test_complete_production_raises_when_order_still_reserved():
+    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+
+    with pytest.raises(ValueError):
+        order.complete_production()
