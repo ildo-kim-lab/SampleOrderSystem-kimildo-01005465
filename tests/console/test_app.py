@@ -143,6 +143,24 @@ def test_run_app_routes_release_menu_choice():
     assert state.sample_registry.find_by_id("S-001").stock == 40
 
 
+def test_run_app_routes_production_line_menu_choice():
+    state = AppState()
+    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=3)
+    state.production_queue.enqueue(order)
+    inputs = iter(["5", "0"])
+    outputs = []
+
+    run_app(
+        state,
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    combined_output = "\n".join(outputs)
+    assert "생산 중인 주문 없음" in combined_output
+    assert "S-001 | ACME Corp | 수량: 3" in combined_output
+
+
 @pytest.mark.parametrize(
     "choice,expected",
     [
