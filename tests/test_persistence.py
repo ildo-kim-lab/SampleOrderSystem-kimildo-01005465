@@ -6,6 +6,7 @@ from sample_order_system.domain.production_queue import ProductionQueue
 from sample_order_system.domain.sample import Sample, SampleRegistry
 from sample_order_system.persistence import (
     load_orders,
+    load_production_queue,
     load_samples,
     save_orders,
     save_production_queue,
@@ -129,3 +130,20 @@ def test_save_production_queue_writes_json_file_in_fifo_order(tmp_path):
             "status": "PRODUCING",
         },
     ]
+
+
+def test_load_production_queue_restores_orders_in_fifo_order(tmp_path):
+    original = ProductionQueue()
+    first_order = Order(sample_id="S-001", customer_name="A", quantity=5)
+    first_order.status = OrderStatus.PRODUCING
+    second_order = Order(sample_id="S-002", customer_name="B", quantity=3)
+    second_order.status = OrderStatus.PRODUCING
+    original.enqueue(first_order)
+    original.enqueue(second_order)
+    filepath = tmp_path / "queue.json"
+    save_production_queue(original, filepath)
+
+    restored = load_production_queue(filepath)
+
+    assert restored.dequeue().sample_id == "S-001"
+    assert restored.dequeue().sample_id == "S-002"
