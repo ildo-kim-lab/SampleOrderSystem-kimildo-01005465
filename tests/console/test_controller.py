@@ -1,4 +1,8 @@
-from sample_order_system.console.controller import list_samples, register_sample
+from sample_order_system.console.controller import (
+    list_samples,
+    register_sample,
+    search_samples,
+)
 from sample_order_system.domain.sample import Sample, SampleRegistry
 
 
@@ -38,3 +42,30 @@ def test_list_samples_outputs_name_and_stock_for_each_sample():
     combined_output = "\n".join(outputs)
     assert "Wafer-A" in combined_output
     assert "42" in combined_output
+
+
+def test_search_samples_outputs_only_matching_name():
+    registry = SampleRegistry()
+    registry.register(
+        Sample(
+            sample_id="S-001",
+            name="Wafer-A",
+            avg_production_time=2.5,
+            yield_rate=0.9,
+        )
+    )
+    registry.register(
+        Sample(
+            sample_id="S-002",
+            name="Chip-B",
+            avg_production_time=1.0,
+            yield_rate=0.8,
+        )
+    )
+    outputs = []
+
+    search_samples(registry, keyword="Wafer", output_func=outputs.append)
+
+    combined_output = "\n".join(outputs)
+    assert "Wafer-A" in combined_output
+    assert "Chip-B" not in combined_output
