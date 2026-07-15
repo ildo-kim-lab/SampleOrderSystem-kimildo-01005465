@@ -19,7 +19,11 @@ def register_sample(
         avg_production_time=avg_production_time,
         yield_rate=yield_rate,
     )
-    registry.register(sample)
+    try:
+        registry.register(sample)
+    except ValueError as error:
+        output_func(str(error))
+        return
     output_func(f"{name} 등록 완료")
 
 
