@@ -84,6 +84,9 @@ def _select_order_by_status(
     matching_orders = [
         order for order in state.order_registry.get_all() if order.status == status
     ]
+    if not matching_orders:
+        output_func("대상 주문이 없습니다")
+        return None
     for index, order in enumerate(matching_orders, start=1):
         output_func(
             f"{index}. {order.sample_id} | {order.customer_name} | 수량: {order.quantity}"
@@ -127,12 +130,14 @@ def run_order_menu(
             selected_order = _select_order_by_status(
                 state, OrderStatus.RESERVED, input_func, output_func, "승인할 번호: "
             )
-            approve_order_console(selected_order, state.sample_registry, output_func)
+            if selected_order is not None:
+                approve_order_console(selected_order, state.sample_registry, output_func)
         elif action == "거절":
             selected_order = _select_order_by_status(
                 state, OrderStatus.RESERVED, input_func, output_func, "거절할 번호: "
             )
-            reject_order_console(selected_order, output_func)
+            if selected_order is not None:
+                reject_order_console(selected_order, output_func)
 
 
 def run_app(
@@ -176,7 +181,8 @@ def run_app(
             selected_order = _select_order_by_status(
                 state, OrderStatus.CONFIRMED, input_func, output_func, "출고할 번호: "
             )
-            release_order_console(selected_order, state.sample_registry, output_func)
+            if selected_order is not None:
+                release_order_console(selected_order, state.sample_registry, output_func)
         elif menu_name == "생산 라인":
             show_production_status(state.production_line, output_func)
             list_waiting_orders(state.production_queue, output_func)
