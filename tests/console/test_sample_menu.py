@@ -17,3 +17,19 @@ def test_run_sample_menu_returns_immediately_on_back_choice():
 
     with pytest.raises(StopIteration):
         next(inputs)
+
+
+def test_run_sample_menu_registers_sample_then_returns_to_menu():
+    state = AppState()
+    inputs = iter(["1", "S-001", "Wafer-A", "2.5", "0.9", "0"])
+    outputs = []
+
+    run_sample_menu(
+        state,
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    sample = state.sample_registry.find_by_id("S-001")
+    assert sample is not None
+    assert sample.name == "Wafer-A"
