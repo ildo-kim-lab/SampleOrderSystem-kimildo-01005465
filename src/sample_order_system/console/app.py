@@ -33,6 +33,18 @@ def resolve_sample_menu_choice(choice: str) -> str | None:
     return _SAMPLE_MENU_CHOICES.get(choice)
 
 
+_ORDER_MENU_CHOICES = {
+    "0": "뒤로가기",
+    "1": "접수",
+    "2": "승인",
+    "3": "거절",
+}
+
+
+def resolve_order_menu_choice(choice: str) -> str | None:
+    return _ORDER_MENU_CHOICES.get(choice)
+
+
 def run_sample_menu(
     state: AppState,
     input_func: Callable[[str], str],
