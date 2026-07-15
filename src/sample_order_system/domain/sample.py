@@ -25,3 +25,9 @@ class SampleRegistry:
 
     def get_all(self) -> list[Sample]:
         return list(self._samples)
+
+    def find_by_id(self, sample_id: str) -> Sample | None:
+        for sample in self._samples:
+            if sample.sample_id == sample_id:
+                return sample
+        return None
