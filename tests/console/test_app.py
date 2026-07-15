@@ -52,7 +52,7 @@ def test_run_app_reports_invalid_choice_and_continues():
 
 
 def test_run_app_enters_selected_menu():
-    inputs = iter(["1", "0"])
+    inputs = iter(["1", "0", "0"])
     outputs = []
 
     run_app(
@@ -62,6 +62,22 @@ def test_run_app_enters_selected_menu():
     )
 
     assert any("[시료관리]" in message for message in outputs)
+
+
+def test_run_app_routes_sample_menu_choice_to_registration():
+    state = AppState()
+    inputs = iter(["1", "1", "S-001", "Wafer-A", "2.5", "0.9", "0", "0"])
+    outputs = []
+
+    run_app(
+        state,
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    sample = state.sample_registry.find_by_id("S-001")
+    assert sample is not None
+    assert sample.name == "Wafer-A"
 
 
 @pytest.mark.parametrize(
