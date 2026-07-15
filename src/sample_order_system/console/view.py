@@ -21,3 +21,23 @@ def format_main_menu() -> str:
         "9. 더미 데이터 생성\n"
         "0. 종료\n"
     )
+
+
+def format_sample_menu() -> str:
+    return (
+        "----- 시료관리 -----\n"
+        "1. 등록\n"
+        "2. 조회\n"
+        "3. 검색\n"
+        "0. 뒤로가기\n"
+    )
+
+
+def format_order_menu() -> str:
+    return (
+        "----- 주문 -----\n"
+        "1. 접수\n"
+        "2. 승인\n"
+        "3. 거절\n"
+        "0. 뒤로가기\n"
+    )

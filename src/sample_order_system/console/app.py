@@ -34,7 +34,12 @@ from sample_order_system.console.dummy_data import (
 )
 from sample_order_system.console.release_controller import release_order_console
 from sample_order_system.console.state import AppState
-from sample_order_system.console.view import format_main_menu, format_order_line
+from sample_order_system.console.view import (
+    format_main_menu,
+    format_order_line,
+    format_order_menu,
+    format_sample_menu,
+)
 from sample_order_system.domain.order import Order, OrderStatus
 
 _MAIN_MENU_CHOICES = {
@@ -99,10 +104,12 @@ def _select_order_by_status(
 def _run_menu_loop(
     input_func: Callable[[str], str],
     output_func: Callable[[str], None],
+    menu_text: str,
     choices: dict[str, str],
     handlers: dict[str, Callable[[], None]],
 ) -> None:
     while True:
+        output_func(menu_text)
         choice = input_func("선택: ")
         action = choices.get(choice)
         if action == "뒤로가기":
@@ -124,6 +131,7 @@ def run_sample_menu(
     _run_menu_loop(
         input_func,
         output_func,
+        format_sample_menu(),
         _SAMPLE_MENU_CHOICES,
         {
             "등록": lambda: register_sample(state.sample_registry, input_func, output_func),
@@ -155,6 +163,7 @@ def run_order_menu(
     _run_menu_loop(
         input_func,
         output_func,
+        format_order_menu(),
         _ORDER_MENU_CHOICES,
         {
             "접수": lambda: create_order(state.order_registry, input_func, output_func),
