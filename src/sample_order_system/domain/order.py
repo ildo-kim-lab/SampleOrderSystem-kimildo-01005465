@@ -26,6 +26,8 @@ class Order:
         self.status = OrderStatus.REJECTED
 
     def approve(self, available_stock: int) -> None:
+        if self.status in _TERMINAL_STATUSES:
+            raise ValueError(f"종료 상태({self.status.value})에서는 승인할 수 없습니다")
         if available_stock >= self.quantity:
             self.status = OrderStatus.CONFIRMED
         else:
