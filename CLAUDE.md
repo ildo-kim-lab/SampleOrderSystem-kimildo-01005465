@@ -17,17 +17,15 @@ S-semi 반도체 회사의 시료 생산주문관리 콘솔 애플리케이션. 
 
 ## 빌드 / 실행 / 테스트 명령어
 
-> 아래 명령어는 프로젝트 스캐폴딩 완료 후 실제 경로/스크립트에 맞게 갱신해야 합니다.
-
 ```bash
-# 실행
-python -m sampleordersystem
+# 실행 (samples.json/orders.json/queue.json을 현재 디렉터리에 저장·복원)
+python -m sample_order_system
 
 # 테스트 전체 실행
 pytest
 
 # 특정 테스트 파일만 실행
-pytest tests/test_order.py -v
+pytest tests/domain/test_order.py -v
 ```
 
 ## 아키텍처 원칙
