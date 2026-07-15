@@ -23,3 +23,5 @@ class Order:
     def approve(self, available_stock: int) -> None:
         if available_stock >= self.quantity:
             self.status = OrderStatus.CONFIRMED
+        else:
+            self.status = OrderStatus.PRODUCING
