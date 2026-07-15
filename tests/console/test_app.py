@@ -1,6 +1,7 @@
 import pytest
 
-from sample_order_system.console.app import resolve_main_menu_choice
+from sample_order_system.console.app import resolve_main_menu_choice, run_app
+from sample_order_system.console.state import AppState
 
 
 @pytest.mark.parametrize(
@@ -17,3 +18,16 @@ from sample_order_system.console.app import resolve_main_menu_choice
 )
 def test_resolve_main_menu_choice(choice, expected):
     assert resolve_main_menu_choice(choice) == expected
+
+
+def test_run_app_exits_on_zero_choice():
+    inputs = iter(["0"])
+    outputs = []
+
+    run_app(
+        AppState(),
+        input_func=lambda prompt="": next(inputs),
+        output_func=outputs.append,
+    )
+
+    assert any("종료" in message for message in outputs)
