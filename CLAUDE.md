@@ -1,11 +1,12 @@
 # CLAUDE.md
 
 이 파일은 이 저장소에서 작업하는 Claude Code(및 기타 에이전트)를 위한 엔지니어링 가이드입니다.
-비즈니스 요구사항 및 도메인 규칙은 [PRD.md](PRD.md)를 단일 진실 공급원으로 참고하세요.
+비즈니스 요구사항 및 도메인 규칙은 [docs/PRD.md](docs/PRD.md)를 단일 진실 공급원으로 참고하세요.
+여러 세션/subagent로 나눠 작업할 때의 역할 분담은 [AGENTS.md](AGENTS.md)를 참고하세요.
 
 ## 프로젝트 개요
 
-S-semi 반도체 회사의 시료 생산주문관리 콘솔 애플리케이션. 상세 요구사항은 `PRD.md`,
+S-semi 반도체 회사의 시료 생산주문관리 콘솔 애플리케이션. 상세 요구사항은 `docs/PRD.md`,
 원본 스펙은 `docs/S-semi.txt` 참고.
 
 ## 기술 스택
@@ -16,17 +17,17 @@ S-semi 반도체 회사의 시료 생산주문관리 콘솔 애플리케이션. 
 
 ## 빌드 / 실행 / 테스트 명령어
 
-> 아래 명령어는 프로젝트 스캐폴딩 완료 후 실제 경로/스크립트에 맞게 갱신해야 합니다.
-
 ```bash
-# 실행
-python -m sampleordersystem
+# 실행 (samples.json/orders.json/queue.json을 현재 디렉터리에 저장·복원)
+python main.py
+# 또는 (PYTHONPATH=src 필요, main.py는 이걸 자동으로 처리해주는 래퍼)
+python -m sample_order_system
 
 # 테스트 전체 실행
 pytest
 
 # 특정 테스트 파일만 실행
-pytest tests/test_order.py -v
+pytest tests/domain/test_order.py -v
 ```
 
 ## 아키텍처 원칙
@@ -38,7 +39,7 @@ pytest tests/test_order.py -v
 - 생산 라인의 큐는 FIFO를 보장하는 자료구조(`collections.deque` 등)를 사용한다.
 - 실 생산량 계산 시 올림(`ceil`) 처리를 반드시 사용한다 (`math.ceil`).
 
-## 도메인 규칙 요약 (PRD.md 참조, 코드 작성 시 주의)
+## 도메인 규칙 요약 (docs/PRD.md 참조, 코드 작성 시 주의)
 
 - 주문 상태: `RESERVED`, `REJECTED`, `PRODUCING`, `CONFIRMED`, `RELEASED` 5종 고정.
   새로운 상태를 임의로 추가하지 않는다.
@@ -49,20 +50,63 @@ pytest tests/test_order.py -v
 
 ## 코딩 컨벤션
 
-- 네이밍: 도메인 용어는 PRD.md 용어집 기준 영문 표기를 따른다 (예: `Sample`, `Order`, `ProductionLine`, `Stock`).
+- 네이밍: 도메인 용어는 docs/PRD.md 용어집 기준 영문 표기를 따른다 (예: `Sample`, `Order`, `ProductionLine`, `Stock`).
 - 상태 값은 문자열 리터럴 대신 `Enum`으로 정의한다 (예: `OrderStatus`).
 - 타입 힌트를 모든 함수 시그니처에 명시한다.
 - 커밋 메시지: 한글 또는 영문 모두 허용, 변경의 "왜"를 한 줄 요약으로 작성.
 
 ## 금지사항 / 주의사항
 
-- PRD.md에 정의되지 않은 기능(인증, 다중 생산 라인, 외부 연동 등)을 임의로 추가하지 않는다.
+- docs/PRD.md에 정의되지 않은 기능(인증, 다중 생산 라인, 외부 연동 등)을 임의로 추가하지 않는다.
   범위 확장이 필요하면 먼저 사용자에게 확인한다.
 - 상태 머신 규칙을 우회하는 임시 처리(예: 특정 메뉴에서 상태를 강제로 바꾸는 디버그 기능)를 넣지 않는다.
 
 ## 테스트 전략
 
+새 기능/버그 수정 시 구현 코드 작성 전에 반드시
+[test-driven-development](.claude/skills/test-driven-development/SKILL.md) 스킬(Agentic TDD)을
+따른다 — PLAN.md 작성 → RED → 사람 검수/커밋 문의 → GREEN → REVIEW(사람) → 커밋 문의.
+
 - 상태 전이(승인/거절/생산완료/출고)에 대한 단위 테스트를 우선 작성한다.
 - 재고 부족/충분 경계값(정확히 재고와 주문 수량이 같은 경우 등)을 테스트한다.
 - 실 생산량(`ceil(부족분/수율)`) 계산에 대한 경계값 테스트를 포함한다.
 - 생산 큐의 FIFO 순서를 검증하는 테스트를 포함한다.
+
+## 테스트/검증 Harness 설계 (초안)
+
+Phase별로 "동작하는 SW"를 담보하기 위한 검증 체계. 아래는 설계안이며, 실제 스캐폴딩
+(디렉터리, 설정 파일, 스킬 등록)은 별도 작업으로 진행한다.
+
+### 목적
+- 사람이 `docs/PLAN.md`의 Phase별 체크리스트를 손으로 확인하기 **전에**, 자동으로
+  회귀를 최대한 걸러낸다.
+- Phase 완료 시마다 동일한 절차로 검증해서 "동작하는 SW"라는 기준을 일관되게 유지한다.
+- Phase가 진행되며 코드가 계속 수정되어도, 이전 Phase에서 확립된 동작이 회귀되지
+  않도록 보장한다 — 장시간에 걸쳐 여러 세션/에이전트가 수정해도 지속 가능한 코드를
+  유지하기 위한 안전망이다.
+
+### 구성 (3계층)
+
+1. **프로젝트 스캐폴딩 규칙**
+   - `src/` 레이아웃 + `pyproject.toml` (또는 `requirements.txt`) — 아직 미도입,
+     Phase 1 착수 시 함께 구성
+   - `tests/` 디렉터리는 도메인 모듈 구조와 1:1 대응 (예: `sample_order_system/domain/order.py`
+     ↔ `tests/domain/test_order.py`)
+
+2. **pytest 단위/통합 테스트**
+   - 범위: 위 "테스트 전략" 섹션의 항목들 — 상태 전이, 재고/생산량 경계값, FIFO
+   - 영속화(Phase 4) 도입 이후에는 저장/로드 왕복(round-trip) 테스트 추가
+   - 실행: `pytest` (전체), `pytest tests/<path> -v` (개별)
+
+3. **콘솔 E2E 스모크 검증**
+   - 콘솔 앱을 서브프로세스로 실행하고, 정해진 입력 시퀀스(더미 데이터 생성 → 주문 →
+     승인 → 생산 → 출고 → 모니터링 조회 등)를 표준입력으로 흘려보낸 뒤 표준출력에서
+     기대 문자열(상태 값, 요약 수치 등)을 확인한다.
+   - `docs/PLAN.md`의 Phase별 "사람이 확인할 것" 항목 중 자동화 가능한 것을 우선 스크립트화한다.
+   - 사람의 수동 확인을 대체하지 않는다 — 명백한 회귀만 사전에 잡아내는 안전망 역할.
+
+### 실행 시점
+- Phase 구현이 끝나면 위 2·3계층을 먼저 실행해서 통과를 확인한 뒤, 사람에게 수동
+  테스트를 요청한다.
+- 향후 `/verify` 스킬로 이 절차(프로젝트 전용 verify 스킬)를 등록해서 매 Phase 종료 시
+  동일한 명령으로 재현 가능하게 만든다 (스킬 등록은 별도 작업).

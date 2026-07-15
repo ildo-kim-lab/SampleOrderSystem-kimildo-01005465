@@ -1,0 +1,131 @@
+import pytest
+
+from sample_order_system.domain.order import Order, OrderStatus
+from sample_order_system.domain.order_service import (
+    approve_order,
+    complete_order_production,
+    release_order,
+)
+from sample_order_system.domain.production_queue import ProductionQueue
+from sample_order_system.domain.sample import Sample, SampleRegistry
+
+
+def test_approve_order_uses_actual_stock_from_registry():
+    registry = SampleRegistry()
+    registry.register(
+        Sample(
+            sample_id="S-001",
+            name="Wafer-A",
+            avg_production_time=2.5,
+            yield_rate=0.9,
+            stock=5,
+        )
+    )
+    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+
+    approve_order(order, registry, ProductionQueue())
+
+    assert order.status == OrderStatus.PRODUCING
+
+
+def test_approve_order_enqueues_order_when_stock_is_insufficient():
+    registry = SampleRegistry()
+    registry.register(
+        Sample(
+            sample_id="S-001",
+            name="Wafer-A",
+            avg_production_time=2.5,
+            yield_rate=0.9,
+            stock=5,
+        )
+    )
+    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    production_queue = ProductionQueue()
+
+    approve_order(order, registry, production_queue)
+
+    assert production_queue.dequeue() is order
+
+
+def test_approve_order_does_not_enqueue_order_when_stock_is_sufficient():
+    registry = SampleRegistry()
+    registry.register(
+        Sample(
+            sample_id="S-001",
+            name="Wafer-A",
+            avg_production_time=2.5,
+            yield_rate=0.9,
+            stock=10,
+        )
+    )
+    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    production_queue = ProductionQueue()
+
+    approve_order(order, registry, production_queue)
+
+    assert production_queue.list_all() == []
+
+
+def test_release_order_decreases_stock_by_order_quantity():
+    registry = SampleRegistry()
+    registry.register(
+        Sample(
+            sample_id="S-001",
+            name="Wafer-A",
+            avg_production_time=2.5,
+            yield_rate=0.9,
+            stock=50,
+        )
+    )
+    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    order.status = OrderStatus.CONFIRMED
+
+    release_order(order, registry)
+
+    assert order.status == OrderStatus.RELEASED
+    assert registry.find_by_id("S-001").stock == 40
+
+
+def test_complete_order_production_increases_stock_by_actual_production_quantity():
+    registry = SampleRegistry()
+    registry.register(
+        Sample(
+            sample_id="S-001",
+            name="Wafer-A",
+            avg_production_time=2.5,
+            yield_rate=0.9,
+            stock=3,
+        )
+    )
+    order = Order(sample_id="S-001", customer_name="ACME Corp", quantity=10)
+    order.status = OrderStatus.PRODUCING
+
+    complete_order_production(order, registry)
+
+    assert order.status == OrderStatus.CONFIRMED
+    # shortage = 10 - 3 = 7, production_quantity = ceil(7 / 0.9) = 8
+    assert registry.find_by_id("S-001").stock == 11
+
+
+def test_approve_order_raises_when_sample_not_found():
+    registry = SampleRegistry()
+    order = Order(sample_id="S-404", customer_name="ACME Corp", quantity=10)
+
+    with pytest.raises(ValueError, match="S-404"):
+        approve_order(order, registry, ProductionQueue())
+
+
+def test_release_order_raises_when_sample_not_found():
+    registry = SampleRegistry()
+    order = Order(sample_id="S-404", customer_name="ACME Corp", quantity=10)
+
+    with pytest.raises(ValueError, match="S-404"):
+        release_order(order, registry)
+
+
+def test_complete_order_production_raises_when_sample_not_found():
+    registry = SampleRegistry()
+    order = Order(sample_id="S-404", customer_name="ACME Corp", quantity=10)
+
+    with pytest.raises(ValueError, match="S-404"):
+        complete_order_production(order, registry)
