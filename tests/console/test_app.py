@@ -1,6 +1,10 @@
 import pytest
 
-from sample_order_system.console.app import resolve_main_menu_choice, run_app
+from sample_order_system.console.app import (
+    resolve_main_menu_choice,
+    resolve_sample_menu_choice,
+    run_app,
+)
 from sample_order_system.console.state import AppState
 
 
@@ -58,3 +62,17 @@ def test_run_app_enters_selected_menu():
     )
 
     assert any("[시료관리]" in message for message in outputs)
+
+
+@pytest.mark.parametrize(
+    "choice,expected",
+    [
+        ("1", "등록"),
+        ("2", "조회"),
+        ("3", "검색"),
+        ("0", "뒤로가기"),
+        ("9", None),
+    ],
+)
+def test_resolve_sample_menu_choice(choice, expected):
+    assert resolve_sample_menu_choice(choice) == expected
