@@ -1,22 +1,24 @@
 # CURRENT_PLAN.md (이번 증분)
 
 ## 목표 (기능 누락 수정)
-주문 승인 시 재고가 부족해 PRODUCING으로 전환되면, 해당 주문이 실제로
-생산 큐(ProductionQueue)에 등록되도록 한다.
+생산 큐에서 대기 중인 주문을 꺼내 생산 완료 처리하는 콘솔 핸들러
+(`complete_next_production_console`)를 만든다. 생산 큐는 FIFO이므로
+항상 맨 앞(가장 먼저 등록된) 주문을 꺼내 처리한다.
 
 ## 검증할 동작
-`approve_order(order, sample_registry, production_queue)`를 재고가
-부족한 상황에서 호출하면, `order.status`가 `PRODUCING`이 되고 동시에
-`production_queue`에 그 주문이 들어간다 (`production_queue.dequeue()`로
-꺼내면 같은 주문 객체가 나온다).
+`complete_next_production_console(production_queue, sample_registry,
+output_func)`를 호출하면:
+1. 큐가 비어있지 않으면 맨 앞 주문을 꺼내 `complete_order_production`으로
+   생산 완료 처리(PRODUCING → CONFIRMED, 재고 증가)하고 결과를 출력한다.
+2. 큐가 비어있으면 안내 메시지를 출력하고 아무 것도 하지 않는다.
 
 ## 근거
-- `docs/PRD.md` 5.4 주문 승인/거절 — "재고가 부족한 경우: 생산 라인에
-  자동으로 등록, 주문 상태를 PRODUCING으로 전환"
-- 점검 중 발견한 기능 누락: `order_service.approve_order`는 상태만
-  PRODUCING으로 바꿀 뿐 `ProductionQueue.enqueue()`를 호출하지 않아서,
-  "생산 라인" 메뉴의 "대기 주문 확인"이 실제 플레이에서 항상 비어 있었다.
+- 점검 중 발견한 기능 누락(발견 목록 4번): `complete_order_production`
+  함수 자체는 있고 단위 테스트도 있지만, 어떤 메뉴에서도 호출되지 않아
+  PRODUCING 상태 주문이 영원히 CONFIRMED로 못 넘어감.
+- `docs/PRD.md` 5.6 생산 라인 — "대기 주문 확인: 생산 큐의 대기열...
+  스케쥴링은 FIFO로 진행"
 
 ## 범위 외
-- 생산 완료 처리를 실행할 메뉴가 없는 문제(발견 목록 4번)는 이어지는
-  별도 증분에서 다룬다. 이번 증분은 "큐에 등록되는 것"까지만 다룬다.
+- 이 함수를 "생산 라인" 메인 메뉴에 실제로 연결하는 것(하위 메뉴로
+  전환)은 다음 증분에서 다룬다.
