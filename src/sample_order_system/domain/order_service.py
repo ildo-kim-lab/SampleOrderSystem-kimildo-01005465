@@ -5,6 +5,8 @@ from sample_order_system.domain.sample import SampleRegistry
 
 def approve_order(order: Order, registry: SampleRegistry) -> None:
     sample = registry.find_by_id(order.sample_id)
+    if sample is None:
+        raise ValueError(f"시료를 찾을 수 없습니다: {order.sample_id}")
     order.approve(available_stock=sample.stock)
 
 
