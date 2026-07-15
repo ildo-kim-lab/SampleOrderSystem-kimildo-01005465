@@ -12,13 +12,21 @@ description: SampleOrderSystem 콘솔 앱을 실제로 빌드/실행/구동해�
 
 ## 빌드 / 실행
 
-패키지가 설치되어 있지 않으므로 `PYTHONPATH`에 `src`를 넣어서 실행한다.
-한글 출력이 깨지지 않도록 `PYTHONIOENCODING=utf-8`도 함께 설정한다.
+저장소 루트의 `main.py`가 `src`를 `sys.path`에 넣어주는 얇은 래퍼이므로,
+`PYTHONPATH` 없이 그냥 실행하면 된다. 한글 출력이 깨지지 않도록
+`PYTHONIOENCODING=utf-8`은 설정해두는 게 안전하다 (환경에 따라 없어도
+되는 경우도 있음).
 
 ```bash
-# 저장소 루트에서
+# 저장소 루트에서 (권장)
+PYTHONIOENCODING=utf-8 python main.py
+
+# 또는 (PYTHONPATH=src를 직접 지정해야 함)
 PYTHONPATH=src PYTHONIOENCODING=utf-8 python -m sample_order_system
 ```
+
+PyCharm 등 IDE에서는 `main.py`를 그냥 우클릭 → Run 하면 된다 (Working
+directory가 기본값인 프로젝트 루트로 잡히므로 별도 설정 불필요).
 
 앱은 현재 작업 디렉터리에 `samples.json`/`orders.json`/`queue.json`을
 저장·복원한다. **검증용으로 실행할 때는 반복 실행으로 지저분해지지
@@ -55,7 +63,7 @@ rm -f samples.json orders.json queue.json   # 검증 후 정리
 **더미 데이터로 전체 주문 흐름 (접수→승인→출고) 확인:**
 
 ```bash
-PYTHONPATH=src PYTHONIOENCODING=utf-8 python -m sample_order_system <<'EOF'
+PYTHONIOENCODING=utf-8 python main.py <<'EOF'
 9
 2
 1
@@ -76,7 +84,7 @@ EOF
 **시료 등록 + 조회 확인:**
 
 ```bash
-PYTHONPATH=src PYTHONIOENCODING=utf-8 python -m sample_order_system <<'EOF'
+PYTHONIOENCODING=utf-8 python main.py <<'EOF'
 1
 1
 S-001
@@ -108,10 +116,10 @@ tests/test_console_smoke.py -v`). 이 파일은 회귀 방지용 자동 테스�
 
 ## 알게 된 것 (Gotchas)
 
-- `python -m sample_order_system`을 저장소 루트가 아닌 다른 디렉터리에서
+- `python -m sample_order_system`은 저장소 루트가 아닌 다른 디렉터리에서
   실행하면 `ModuleNotFoundError`가 난다 (PYTHONPATH가 `src`를 상대경로로
-  가리키기 때문). 반드시 저장소 루트에서, `PYTHONPATH=src`를 절대/상대
-  경로로 정확히 잡고 실행할 것.
+  가리키기 때문). `python main.py`는 스크립트 자신의 위치 기준으로
+  `src`를 찾으므로 이 문제가 없다.
 - 잘못된 메인 메뉴 번호("99" 등)는 "잘못된 선택입니다"만 출력하고
   루프를 계속한다 (크래시 없음).
 - 숫자 입력란에 문자를 넣으면(`avg_production_time`, `주문 수량` 등)

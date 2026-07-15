@@ -19,6 +19,8 @@ S-semi 반도체 회사의 시료 생산주문관리 콘솔 애플리케이션. 
 
 ```bash
 # 실행 (samples.json/orders.json/queue.json을 현재 디렉터리에 저장·복원)
+python main.py
+# 또는 (PYTHONPATH=src 필요, main.py는 이걸 자동으로 처리해주는 래퍼)
 python -m sample_order_system
 
 # 테스트 전체 실행
